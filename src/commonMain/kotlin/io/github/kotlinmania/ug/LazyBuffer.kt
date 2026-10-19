@@ -125,7 +125,7 @@ public class LazyBuffer(
 
     public fun maybeAllocateUninit() {
         if (inner.data == null) {
-            inner.data = inner.device.allocateUninit(inner.dtype, inner.shape.numElements)
+            inner.data = inner.device.allocateUninit(inner.dtype, inner.shape.numElements())
         }
     }
 
@@ -167,7 +167,7 @@ public class LazyBuffer(
         }
     }
 
-    public fun elemCount(): Int = inner.shape.numElements
+    public fun elemCount(): Int = inner.shape.numElements()
 
     public fun dims(): List<Int> = inner.shape.dims
 
@@ -287,10 +287,10 @@ public class LazyBuffer(
         for ((d, s) in dstLayout.dims.zip(dstLayout.strides)) {
             maxOffset += maxOf(0, d - 1) * s
         }
-        if (maxOffset >= shape.numElements) {
+        if (maxOffset >= shape.numElements()) {
             ugBail("set_l out of bounds, dst shape $shape, layout $dstLayout, max off $maxOffset")
         }
-        if (dstLayout.numElements != values.shape.numElements) {
+        if (dstLayout.numElements() != values.shape.numElements()) {
             ugBail("set_l mismatch between the values shape ${values.shape} and layout $dstLayout")
         }
         if (dtype != values.dtype) {
@@ -433,8 +433,8 @@ public class LazyBuffer(
     }
 
     public fun reshape(s: Shape): LazyBuffer {
-        val dstNel = s.numElements
-        val srcNel = shape.numElements
+        val dstNel = s.numElements()
+        val srcNel = shape.numElements()
         if (dstNel != srcNel) {
             ugBail("cannot reshape between $shape ($srcNel elts) and $s ($dstNel elts)")
         }
@@ -573,7 +573,7 @@ public class LazyBuffer(
         public fun fromSlice(data: Slice, s: Shape): LazyBuffer {
             val device = data.device
             val dtype = data.dtype
-            if (s.numElements != data.len) {
+            if (s.numElements() != data.len) {
                 ugBail("unexpected number of elements ${data.len} for shape $s")
             }
             val inner =
@@ -589,7 +589,7 @@ public class LazyBuffer(
         }
 
         public fun copy(data: FloatArray, s: Shape, device: Device): LazyBuffer {
-            if (s.numElements != data.size) {
+            if (s.numElements() != data.size) {
                 ugBail("unexpected number of elements ${data.size} for shape $s")
             }
             val slice = device.allocateUninit(DType.F32, data.size)
@@ -610,7 +610,7 @@ public class LazyBuffer(
             copy(data, Shape(s.first, s.second), device)
 
         public fun copy(data: IntArray, s: Shape, device: Device): LazyBuffer {
-            if (s.numElements != data.size) {
+            if (s.numElements() != data.size) {
                 ugBail("unexpected number of elements ${data.size} for shape $s")
             }
             val slice = device.allocateUninit(DType.I32, data.size)
@@ -628,7 +628,7 @@ public class LazyBuffer(
         }
 
         public fun copy(data: LongArray, s: Shape, device: Device): LazyBuffer {
-            if (s.numElements != data.size) {
+            if (s.numElements() != data.size) {
                 ugBail("unexpected number of elements ${data.size} for shape $s")
             }
             val slice = device.allocateUninit(DType.I64, data.size)
@@ -646,7 +646,7 @@ public class LazyBuffer(
         }
 
         public fun copy(data: Array<F16>, s: Shape, device: Device): LazyBuffer {
-            if (s.numElements != data.size) {
+            if (s.numElements() != data.size) {
                 ugBail("unexpected number of elements ${data.size} for shape $s")
             }
             val slice = device.allocateUninit(DType.F16, data.size)
@@ -664,7 +664,7 @@ public class LazyBuffer(
         }
 
         public fun copy(data: Array<BF16>, s: Shape, device: Device): LazyBuffer {
-            if (s.numElements != data.size) {
+            if (s.numElements() != data.size) {
                 ugBail("unexpected number of elements ${data.size} for shape $s")
             }
             val slice = device.allocateUninit(DType.BF16, data.size)
