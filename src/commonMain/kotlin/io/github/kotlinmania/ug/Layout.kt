@@ -7,7 +7,6 @@ public class Shape(
     public val dims: List<Int> = dims.toList()
 
     public constructor(vararg dims: Int) : this(dims.toList())
-    public constructor(dims: IntArray) : this(dims.toList())
 
     public fun numElements(): Int = if (dims.isEmpty()) 1 else dims.fold(1) { acc, d -> acc * d }
 
@@ -322,8 +321,6 @@ public class Layout(
         public fun fromShape(vararg dims: Int): Layout = fromShape(Shape(*dims))
 
         public fun fromShape(dims: List<Int>): Layout = fromShape(Shape(dims))
-
-        public fun fromShape(dims: IntArray): Layout = fromShape(Shape(dims))
 
         public fun fromShape(dim: Int): Layout = fromShape(Shape(dim))
     }
