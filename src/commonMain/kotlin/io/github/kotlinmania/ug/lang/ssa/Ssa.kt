@@ -153,12 +153,6 @@ public data class Kernel(
     public val args: List<KernelArg>,
     public val launchConfig: LaunchConfig,
 ) {
-    public fun instrs(): List<Instr> = instrs
-
-    public fun args(): List<KernelArg> = args
-
-    public fun launchConfig(): LaunchConfig = launchConfig
-
     public fun flopsMemPerThread(): FlopsMem {
         var flops = 0
         var mem = 0

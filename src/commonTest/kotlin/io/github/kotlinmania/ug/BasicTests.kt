@@ -75,7 +75,7 @@ class BasicTests {
         val a = Buffer.F32(floatArrayOf(0f, 1f, 2f, 3f, 2f, 1f, 2f, 1f))
         val b = Buffer.F32(FloatArray(nRows * nCols))
         for (groupIdx in 0 until nRows) {
-            evalSsa(ssaKernel, listOf(a, b), emptyList(), groupIdx)
+            evalSsa(ssaKernel, listOf(a, b), emptyList(), groupIdx, warpSize = nCols)
         }
         val bResult = b.asF32().toList()
         val expected =
@@ -102,7 +102,7 @@ class BasicTests {
         val a = Buffer.F32(floatArrayOf(0f, 1f, 2f, 3f, 2f, 1f, 2f, 1f))
         val b = Buffer.F32(FloatArray(nRows * nCols))
         for (groupIdx in 0 until nRows) {
-            evalSsa(ssaKernel, listOf(a, b), emptyList(), groupIdx)
+            evalSsa(ssaKernel, listOf(a, b), emptyList(), groupIdx, warpSize = nCols)
         }
         val bResult = b.asF32().toList()
         val expected =
@@ -132,7 +132,7 @@ class BasicTests {
         val kernel = io.github.kotlinmania.ug.lang.op.Kernel("affine", listOf(ptr), listOf(st))
         val ssaKernel = kernel.lower()
         val a = Buffer.F32(floatArrayOf(1f, 2f, 3f, 4f))
-        evalSsa(ssaKernel, listOf(a), emptyList(), 0)
+        evalSsa(ssaKernel, listOf(a), emptyList(), 0, warpSize = 4)
         val aResult = a.asF32().toList()
         assertEquals(listOf(1.5f, 4.5f, 7.5f, 10.5f), aResult)
     }

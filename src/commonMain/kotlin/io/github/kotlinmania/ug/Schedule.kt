@@ -15,8 +15,6 @@ public class KernelItem(
     public val dstLayout: Layout?,
     public val args: List<Pair<ArgId, LazyBuffer>>,
 ) {
-    public fun ast(): Ast = ast
-
     public fun kernel(): io.github.kotlinmania.ug.lang.op.Kernel {
         val kernelArgs =
             args.map { (id, lb) ->
@@ -159,8 +157,6 @@ public class Schedule(
 ) {
     public fun getArgId(argId: ArgId): LazyBuffer =
         perArgId[argId] ?: throw UgError.Msg("no arg for id $argId")
-
-    public fun items(): List<ScheduleItem> = items
 
     public fun compile(compilationCache: CompilationCache = CompilationCache()): CompiledSchedule {
         val funcs = mutableListOf<Func>()

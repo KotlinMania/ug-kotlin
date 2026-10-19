@@ -299,6 +299,9 @@ private fun fmtTensorFloat(
     sb.append(']')
 }
 
+private fun LazyBuffer.dataVecIntLong(): List<Long> =
+    if (dtype == DType.I32) dataVec<Int>().map { it.toLong() } else dataVec<Long>()
+
 private fun fmtTensorInt(
     t: LazyBuffer,
     indent: Int,
@@ -313,20 +316,20 @@ private fun fmtTensorInt(
     sb.append('[')
     when {
         dims.isEmpty() -> {
-            val v = t.dataVec<Long>()
+            val v = t.dataVecIntLong()
             if (v.isNotEmpty()) {
                 tf.fmt(v[0], maxW, sb)
             }
         }
 
         dims.size == 1 && summarize && dims[0] > 2 * edgeItems -> {
-            val vs1 = t.narrow(0.D, 0, edgeItems).dataVec<Long>()
+            val vs1 = t.narrow(0.D, 0, edgeItems).dataVecIntLong()
             for (v in vs1) {
                 tf.fmt(v, maxW, sb)
                 sb.append(", ")
             }
             sb.append("...")
-            val vs2 = t.narrow(0.D, dims[0] - edgeItems, edgeItems).dataVec<Long>()
+            val vs2 = t.narrow(0.D, dims[0] - edgeItems, edgeItems).dataVecIntLong()
             for (v in vs2) {
                 sb.append(", ")
                 tf.fmt(v, maxW, sb)
@@ -335,7 +338,7 @@ private fun fmtTensorInt(
 
         dims.size == 1 -> {
             val elementsPerLine = maxOf(1, po.lineWidth / (maxW + 2))
-            val vs = t.dataVec<Long>()
+            val vs = t.dataVecIntLong()
             for ((i, v) in vs.withIndex()) {
                 if (i > 0) {
                     if (i % elementsPerLine == 0) {
@@ -395,7 +398,7 @@ public fun LazyBuffer.formatTensor(options: PrinterOptions = printOptions()): St
             val tf = IntFormatter()
             val vs =
                 try {
-                    toDisplay.dataVec<Long>()
+                    toDisplay.dataVecIntLong()
                 } catch (_: Throwable) {
                     emptyList()
                 }

@@ -49,7 +49,7 @@ private fun formatA(a: A): String =
     }
 
 public fun gen(w: Appendable, funcName: String, kernel: Kernel) {
-    val instrs = kernel.instrs()
+    val instrs = kernel.instrs
     val containsReduceLocal = instrs.any { it is Instr.ReduceLocal }
     if (containsReduceLocal) {
         throw UgError.Msg("TODO: add the reduce code if needed")
@@ -57,7 +57,7 @@ public fun gen(w: Appendable, funcName: String, kernel: Kernel) {
 
     w.append("#include<math.h>\n")
     w.append("void ").append(funcName).append("(\n")
-    val args = kernel.args()
+    val args = kernel.args
     for ((argIdx, kernelArg) in args.withIndex()) {
         val isLast = argIdx == args.size - 1
         val delim = if (isLast) "" else ","

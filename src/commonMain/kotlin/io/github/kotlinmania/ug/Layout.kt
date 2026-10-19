@@ -8,15 +8,11 @@ public class Shape(
 
     public constructor(vararg dims: Int) : this(dims.toList())
 
-    public fun numElements(): Int = if (dims.isEmpty()) 1 else dims.fold(1) { acc, d -> acc * d }
+    public val numElements: Int get() = if (dims.isEmpty()) 1 else dims.fold(1) { acc, d -> acc * d }
 
-    public val numElements: Int get() = numElements()
+    public fun elemCount(): Int = numElements
 
-    public fun elemCount(): Int = numElements()
-
-    public fun rank(): Int = dims.size
-
-    public val rank: Int get() = rank()
+    public val rank: Int get() = dims.size
 
     public fun intoDims(): List<Int> = dims
 
@@ -259,15 +255,11 @@ public class Layout(
         return Layout(Shape(dims), str, offset)
     }
 
-    public fun numElements(): Int = shape.numElements()
-
-    public val numElements: Int get() = numElements()
+    public val numElements: Int get() = shape.numElements
 
     public val dims: List<Int> get() = shape.dims
 
-    public fun rank(): Int = shape.rank()
-
-    public val rank: Int get() = rank()
+    public val rank: Int get() = shape.rank
 
     public fun setOffset(newOffset: Int): Layout {
         offset = newOffset
