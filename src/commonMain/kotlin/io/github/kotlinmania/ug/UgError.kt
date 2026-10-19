@@ -18,27 +18,26 @@ public data class MatMulUnexpectedStriding(
 }
 
 public sealed class UgError(
-    message: String,
-    cause: Throwable? = null,
-) : Exception(message, cause),
-    StdError {
+    public val message: String,
+    public val cause: UgError? = null,
+) : StdError {
     public class Msg(
         message: String,
     ) : UgError(message)
 
     public class ParseInt(
         message: String,
-        cause: Throwable? = null,
+        cause: UgError? = null,
     ) : UgError(message, cause)
 
     public class Io(
         message: String,
-        cause: Throwable? = null,
+        cause: UgError? = null,
     ) : UgError(message, cause)
 
     public class FromUtf8(
         message: String,
-        cause: Throwable? = null,
+        cause: UgError? = null,
     ) : UgError(message, cause)
 
     public class BorrowMut(
@@ -51,12 +50,12 @@ public sealed class UgError(
 
     public class LibLoading(
         message: String,
-        cause: Throwable? = null,
+        cause: UgError? = null,
     ) : UgError(message, cause)
 
     public class Wrapped(
         message: String,
-        cause: Throwable? = null,
+        cause: UgError? = null,
     ) : UgError(message, cause)
 
     public class WithPath(
@@ -67,7 +66,7 @@ public sealed class UgError(
     public class WithBacktrace(
         public val inner: UgError,
         public val backtrace: String = "",
-    ) : UgError(inner.message.orEmpty(), inner)
+    ) : UgError(inner.message, inner)
 
     public class MatMulStriding(
         public val info: MatMulUnexpectedStriding,
@@ -79,7 +78,7 @@ public sealed class UgError(
 
     public class SafeTensor(
         message: String,
-        cause: Throwable? = null,
+        cause: UgError? = null,
     ) : UgError(message, cause)
 
     public class UnsupportedSafeTensorDtype(
@@ -90,8 +89,14 @@ public sealed class UgError(
 
     public fun bt(): UgError = this
 
+    public fun raise(): Nothing = throw UgException(this)
+
     public companion object {
-        public fun wrap(err: Throwable): UgError = Wrapped(err.message ?: err.toString(), err)
+        public fun fromException(exception: Any?): UgError? = (exception as? UgException)?.error
+
+        public fun wrap(message: String): UgError = Wrapped(message)
+
+        internal fun wrap(err: Throwable): UgError = wrap(err.message ?: err.toString())
 
         public fun msg(message: String): UgError = Msg(message)
 
@@ -99,7 +104,11 @@ public sealed class UgError(
     }
 }
 
-public fun ugBail(message: String): Nothing = throw UgError.Msg(message)
+internal class UgException(
+    val error: UgError,
+) : Exception(error.message, error.cause?.let { UgException(it) })
+
+public fun ugBail(message: String): Nothing = UgError.Msg(message).raise()
 
 public fun <T, U> zip(r1: Result<T>, r2: Result<U>): Result<Pair<T, U>> =
     if (r1.isSuccess && r2.isSuccess) {

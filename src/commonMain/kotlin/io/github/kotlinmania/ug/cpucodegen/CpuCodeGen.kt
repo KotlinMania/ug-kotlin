@@ -52,7 +52,7 @@ public fun gen(w: Appendable, funcName: String, kernel: Kernel) {
     val instrs = kernel.instrs
     val containsReduceLocal = instrs.any { it is Instr.ReduceLocal }
     if (containsReduceLocal) {
-        throw UgError.Msg("TODO: add the reduce code if needed")
+        UgError.Msg("TODO: add the reduce code if needed").raise()
     }
 
     w.append("#include<math.h>\n")
@@ -146,7 +146,7 @@ public fun gen(w: Appendable, funcName: String, kernel: Kernel) {
             }
 
             is Instr.EndIf, is Instr.EndRange -> {
-                if (depth == 0) throw UgError.Msg("unmatched EndRange")
+                if (depth == 0) UgError.Msg("unmatched EndRange").raise()
                 depth -= 1
                 val curIndent = " ".repeat(2 * depth + 2)
                 w.append(curIndent).append("}\n")
@@ -231,8 +231,8 @@ public fun gen(w: Appendable, funcName: String, kernel: Kernel) {
 
             is Instr.SpecialInstr -> {
                 when (instr.special) {
-                    Special.ThreadIdx -> throw UgError.Msg("thread-id is currently not supported in the cpu backend")
-                    Special.BlockIdx -> throw UgError.Msg("block-id is currently not supported in the cpu backend")
+                    Special.ThreadIdx -> UgError.Msg("thread-id is currently not supported in the cpu backend").raise()
+                    Special.BlockIdx -> UgError.Msg("block-id is currently not supported in the cpu backend").raise()
                 }
             }
 
@@ -259,7 +259,7 @@ public fun gen(w: Appendable, funcName: String, kernel: Kernel) {
         }
     }
     w.append("}\n")
-    if (depth > 0) throw UgError.Msg("unmatched Range")
+    if (depth > 0) UgError.Msg("unmatched Range").raise()
 }
 
 public fun gen(funcName: String, kernel: Kernel): String {

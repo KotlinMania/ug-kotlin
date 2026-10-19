@@ -13,6 +13,9 @@ struct UgExportTests {
         let transposed = layout.transpose()
         #expect(transposed.dims == [3, 2])
         #expect(transposed.numElements() == 6)
+        #expect(WithDType.Companion.shared.F32.createArray(len: 2) == [0, 0])
+        let error = UgError.Msg(message: "invalid tensor")
+        #expect(error.withPath(path: "weights").message == "path: weights invalid tensor")
     }
 }
 #elseif canImport(XCTest)
@@ -28,6 +31,9 @@ final class UgExportTests: XCTestCase {
         let transposed = layout.transpose()
         XCTAssertEqual(transposed.dims, [3, 2])
         XCTAssertEqual(transposed.numElements(), 6)
+        XCTAssertEqual(WithDType.Companion.shared.F32.createArray(len: 2), [0, 0])
+        let error = UgError.Msg(message: "invalid tensor")
+        XCTAssertEqual(error.withPath(path: "weights").message, "path: weights invalid tensor")
     }
 }
 #endif

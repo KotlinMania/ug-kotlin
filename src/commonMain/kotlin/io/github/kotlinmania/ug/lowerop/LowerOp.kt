@@ -138,7 +138,7 @@ internal data class Indexes(
             is LayoutOp.Broadcast -> {
                 for (dim in op.broadcastedDims) {
                     if (dim >= idxs.size) {
-                        throw UgError.Msg("unexpected dim for broadcast, $dim $shape")
+                        UgError.Msg("unexpected dim for broadcast, $dim $shape").raise()
                     }
                     idxs[dim] = IndexFormula.Constant(0)
                 }
@@ -151,14 +151,14 @@ internal data class Indexes(
 
             is LayoutOp.Narrow -> {
                 if (op.dim >= idxs.size) {
-                    throw UgError.Msg("unexpected dim for narrow, ${op.dim} $shape")
+                    UgError.Msg("unexpected dim for narrow, ${op.dim} $shape").raise()
                 }
                 idxs[op.dim] = idxs[op.dim].add(IndexFormula.Constant(op.offset))
             }
 
             is LayoutOp.Transpose -> {
                 if (op.dim1 >= idxs.size || op.dim2 >= idxs.size) {
-                    throw UgError.Msg("unexpected dims for transpose ${op.dim1} ${op.dim2}, $shape")
+                    UgError.Msg("unexpected dims for transpose ${op.dim1} ${op.dim2}, $shape").raise()
                 }
                 val tmp = idxs[op.dim1]
                 idxs[op.dim1] = idxs[op.dim2]
@@ -167,10 +167,10 @@ internal data class Indexes(
 
             is LayoutOp.SplitDim -> {
                 if (op.dim >= argShape.rank()) {
-                    throw UgError.Msg("unexpected split dim ${op.dim} src $shape")
+                    UgError.Msg("unexpected split dim ${op.dim} src $shape").raise()
                 }
                 if (op.lhs >= shape.rank() || op.rhs >= shape.rank() || op.lhs == op.rhs) {
-                    throw UgError.Msg("unexpected split dims ${op.lhs}x${op.rhs} dst $shape")
+                    UgError.Msg("unexpected split dims ${op.lhs}x${op.rhs} dst $shape").raise()
                 }
                 val dims = shape.dims
                 val (l, r) =
@@ -188,7 +188,7 @@ internal data class Indexes(
 
             is LayoutOp.MergeDims -> {
                 if (op.dim >= shape.rank()) {
-                    throw UgError.Msg("unexpected merge dim ${op.dim} dst $shape")
+                    UgError.Msg("unexpected merge dim ${op.dim} dst $shape").raise()
                 }
                 val idx = idxs.removeAt(op.dim)
                 val argDims = argShape.dims
@@ -209,7 +209,7 @@ internal data class Indexes(
 
 internal fun Layout.lower(idxs: Indexes): Pair<Id, Block> {
     if (idxs.list.size != strides.size) {
-        throw UgError.Msg("len mismatch between strides $this and idxs $idxs")
+        UgError.Msg("len mismatch between strides $this and idxs $idxs").raise()
     }
     val block = Block.empty()
     var accId: Id? = if (offset == 0) null else block.cst(offset)
@@ -242,7 +242,7 @@ internal fun Ast.lower(
     val dstId =
         when (val in_ = inner) {
             is AstInner.Load -> {
-                val ptrI = perArg[in_.src] ?: throw UgError.Msg("unknown arg ${in_.src}")
+                val ptrI = perArg[in_.src] ?: UgError.Msg("unknown arg ${in_.src}").raise()
                 val (offI, offB) = in_.layout.lower(idxs)
                 block.instrs.addAll(offB.instrs)
                 block.push(Instr.Load(src = ptrI, offset = offI.toA(), dtype = dtype))
@@ -253,7 +253,7 @@ internal fun Ast.lower(
             }
 
             is AstInner.Id -> {
-                throw UgError.Msg("unexpected id node in Ast")
+                UgError.Msg("unexpected id node in Ast").raise()
             }
 
             is AstInner.Unary -> {
@@ -317,14 +317,14 @@ public fun lowerKernel(
         val dtype =
             when (val t = arg.type) {
                 is UgType.Ptr -> t.dtype
-                is UgType.Value -> throw UgError.Msg("non-pointer arguments are not supported yet")
+                is UgType.Value -> UgError.Msg("non-pointer arguments are not supported yet").raise()
             }
         val id = block.push(Instr.DefineGlobal(index = index, dtype = dtype))
         perArg[arg.id] = id.toVarId()
     }
 
     for (op in kernel.ops) {
-        val ptrI = perArg[op.dst] ?: throw UgError.Msg("unknown arg ${op.dst}")
+        val ptrI = perArg[op.dst] ?: UgError.Msg("unknown arg ${op.dst}").raise()
         val idxList = mutableListOf<IndexFormula>()
         val ranges = mutableListOf<Range>()
 

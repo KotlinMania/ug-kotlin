@@ -39,6 +39,12 @@ dependencies {
 }
 ```
 
+### Typed data and error values
+
+`WithDType.F32`, `I32`, `I64`, `F16`, and `BF16` are concrete scalar descriptors. Each creates typed values and converts its matching CPU storage. Half-precision storage exposes a live read-only `data` list and indexed `get`/`set` operations; host/device copy methods preserve buffer contents.
+
+`UgError` exposes domain variants, messages, and causes to Swift without inheriting from a platform exception. Kotlin code raises it with `error.raise()`. After catching an exception, `UgError.fromException(exception)` returns the original domain error, or `null` for an unrelated exception.
+
 ### Building
 
 ```bash
@@ -58,7 +64,7 @@ dependencies {
 
 ### Porting guidelines
 
-See [AGENTS.md](AGENTS.md) and [CLAUDE.md](CLAUDE.md) for translator discipline, port-lint header convention, and Rust → Kotlin idiom mapping.
+See [AGENTS.md](AGENTS.md) for translator discipline, port-lint header convention, and Rust → Kotlin idiom mapping.
 
 ### License
 

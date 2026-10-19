@@ -8,7 +8,9 @@ import io.github.kotlinmania.ug.lang.ReduceOp
 import io.github.kotlinmania.ug.lang.UnaryOp
 import io.github.kotlinmania.ug.lang.op.LayoutOp
 
-public typealias CustomFCallback = (List<Slice>) -> Unit
+public fun interface CustomFCallback {
+    public operator fun invoke(slices: List<Slice>)
+}
 
 public class CustomF(
     public val callback: CustomFCallback,
@@ -148,21 +150,29 @@ public class LazyBuffer(
         compiled.run()
     }
 
-    public fun <T : Any> dataVec(withDType: WithDType<T>): List<T> {
+    private fun realizedSlice(): Slice {
         realize()
-        val slice = inner.data ?: throw UgError.Msg("no data")
-        return slice.toVec(withDType)
+        return inner.data ?: UgError.Msg("no data").raise()
     }
 
-    @Suppress("UNCHECKED_CAST")
+    public fun dataVec(withDType: F32Type): List<Float> = realizedSlice().toVec(withDType)
+
+    public fun dataVec(withDType: I32Type): List<Int> = realizedSlice().toVec(withDType)
+
+    public fun dataVec(withDType: I64Type): List<Long> = realizedSlice().toVec(withDType)
+
+    public fun dataVec(withDType: F16Type): List<F16> = realizedSlice().toVec(withDType)
+
+    public fun dataVec(withDType: BF16Type): List<BF16> = realizedSlice().toVec(withDType)
+
     public inline fun <reified T : Any> dataVec(): List<T> =
         when (T::class) {
-            Float::class -> dataVec(WithDType.F32) as List<T>
-            Int::class -> dataVec(WithDType.I32) as List<T>
-            Long::class -> dataVec(WithDType.I64) as List<T>
-            F16::class -> dataVec(WithDType.F16) as List<T>
-            BF16::class -> dataVec(WithDType.BF16) as List<T>
-            else -> throw UgError.Msg("unsupported dtype for dataVec")
+            Float::class -> dataVec(WithDType.F32).map { it as T }
+            Int::class -> dataVec(WithDType.I32).map { it as T }
+            Long::class -> dataVec(WithDType.I64).map { it as T }
+            F16::class -> dataVec(WithDType.F16).map { it as T }
+            BF16::class -> dataVec(WithDType.BF16).map { it as T }
+            else -> UgError.Msg("unsupported dtype for dataVec").raise()
         }
 
     public fun elemCount(): Int = inner.shape.numElements()
@@ -226,7 +236,7 @@ public class LazyBuffer(
     }
 
     public fun custom(
-        f: (List<Slice>) -> Unit,
+        f: CustomFCallback,
         args: List<LazyBuffer>,
         s: Shape,
         dtype: DType,
@@ -245,7 +255,7 @@ public class LazyBuffer(
     }
 
     public fun customIp(
-        f: (List<Slice>) -> Unit,
+        f: CustomFCallback,
         args: List<LazyBuffer>,
     ): LazyBuffer {
         val inner =
@@ -682,7 +692,7 @@ public class LazyBuffer(
         }
 
         public fun custom(
-            f: (List<Slice>) -> Unit,
+            f: CustomFCallback,
             args: List<LazyBuffer>,
             s: Shape,
             dtype: DType,

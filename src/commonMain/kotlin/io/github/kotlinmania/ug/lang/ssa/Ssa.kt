@@ -176,7 +176,7 @@ public data class Kernel(
                                 when (val c = lo.value) {
                                     is Const.I64 -> c.value
                                     is Const.I32 -> c.value.toLong()
-                                    else -> throw UgError.Msg("range lo is not a const i32/i64")
+                                    else -> UgError.Msg("range lo is not a const i32/i64").raise()
                                 }
                             }
 
@@ -186,12 +186,12 @@ public data class Kernel(
                                         when (val v = c.value) {
                                             is Const.I64 -> v.value
                                             is Const.I32 -> v.value.toLong()
-                                            else -> throw UgError.Msg("range lo is not a const")
+                                            else -> UgError.Msg("range lo is not a const").raise()
                                         }
                                     }
 
                                     else -> {
-                                        throw UgError.Msg("range lo is not a const")
+                                        UgError.Msg("range lo is not a const").raise()
                                     }
                                 }
                             }
@@ -202,7 +202,7 @@ public data class Kernel(
                                 when (val c = up.value) {
                                     is Const.I64 -> c.value
                                     is Const.I32 -> c.value.toLong()
-                                    else -> throw UgError.Msg("range up is not a const i32/i64")
+                                    else -> UgError.Msg("range up is not a const i32/i64").raise()
                                 }
                             }
 
@@ -212,12 +212,12 @@ public data class Kernel(
                                         when (val v = c.value) {
                                             is Const.I64 -> v.value
                                             is Const.I32 -> v.value.toLong()
-                                            else -> throw UgError.Msg("range up is not a const")
+                                            else -> UgError.Msg("range up is not a const").raise()
                                         }
                                     }
 
                                     else -> {
-                                        throw UgError.Msg("range up is not a const")
+                                        UgError.Msg("range up is not a const").raise()
                                     }
                                 }
                             }
@@ -227,7 +227,7 @@ public data class Kernel(
                 }
 
                 is Instr.EndRange -> {
-                    if (mults.isEmpty()) throw UgError.Msg("unexpected EndRange")
+                    if (mults.isEmpty()) UgError.Msg("unexpected EndRange").raise()
                     mult = mults.removeAt(mults.size - 1)
                 }
 
@@ -259,7 +259,7 @@ public data class Kernel(
             for ((lineNo, instr) in instrs.withIndex()) {
                 if (instr is Instr.DefineGlobal) {
                     if (instr.index != args.size) {
-                        throw UgError.Msg("unexpected order for arguments in kernel $instrs")
+                        UgError.Msg("unexpected order for arguments in kernel $instrs").raise()
                     }
                     val argId = ArgId.new()
                     val arg = Arg.new(argId, UgType.Ptr(instr.dtype))

@@ -88,7 +88,7 @@ public class CompiledSchedule internal constructor(
                     val slices =
                         func.args.map { (_, lb) ->
                             lb.maybeAllocateUninit()
-                            lb.data ?: throw UgError.Msg("no data for arg in kernel run")
+                            lb.data ?: UgError.Msg("no data for arg in kernel run").raise()
                         }
                     device.run(func.func, slices)
                 }
@@ -123,9 +123,9 @@ public class CompiledSchedule internal constructor(
                     lhs.maybeAllocateUninit()
                     rhs.maybeAllocateUninit()
 
-                    val dstSlice = dst.data ?: throw UgError.Msg("no dst data")
-                    val lhsSlice = lhs.data ?: throw UgError.Msg("no lhs data")
-                    val rhsSlice = rhs.data ?: throw UgError.Msg("no rhs data")
+                    val dstSlice = dst.data ?: UgError.Msg("no dst data").raise()
+                    val lhsSlice = lhs.data ?: UgError.Msg("no lhs data").raise()
+                    val rhsSlice = rhs.data ?: UgError.Msg("no rhs data").raise()
                     val bmnk = func.bmnk
                     device.matmul(
                         dst = dstSlice,
@@ -144,7 +144,7 @@ public class CompiledSchedule internal constructor(
                     val slices =
                         func.args.map { (_, lb) ->
                             lb.maybeAllocateUninit()
-                            lb.data ?: throw UgError.Msg("no data for custom run")
+                            lb.data ?: UgError.Msg("no data for custom run").raise()
                         }
                     func.f(slices)
                 }
@@ -159,7 +159,7 @@ public class Schedule internal constructor(
     public val device: Device,
 ) {
     public fun getArgId(argId: ArgId): LazyBuffer =
-        perArgId[argId] ?: throw UgError.Msg("no arg for id $argId")
+        perArgId[argId] ?: UgError.Msg("no arg for id $argId").raise()
 
     public fun compile(compilationCache: CompilationCache = CompilationCache()): CompiledSchedule {
         val funcs = mutableListOf<Func>()
@@ -288,7 +288,7 @@ private class Context(
     val astCache = mutableMapOf<LazyBufferId, Ast>()
 
     fun getArgId(argId: ArgId): LazyBuffer =
-        perArgId[argId] ?: throw UgError.Msg("no arg for id $argId")
+        perArgId[argId] ?: UgError.Msg("no arg for id $argId").raise()
 
     fun walk(b: LazyBuffer): Ast {
         val id = b.id

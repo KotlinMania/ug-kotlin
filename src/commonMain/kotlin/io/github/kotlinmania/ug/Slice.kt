@@ -2,6 +2,7 @@ package io.github.kotlinmania.ug
 
 import io.github.kotlinmania.half.BF16
 import io.github.kotlinmania.half.F16
+import io.github.kotlinmania.ug.cpuruntime.CpuStorage
 
 public interface Slice {
     public val device: Device
@@ -36,95 +37,47 @@ public interface Slice {
     public fun toLongArray(): LongArray
 }
 
-@Suppress("UNCHECKED_CAST")
 public inline fun <reified T> Slice.toVec(): List<T> =
     when (T::class) {
-        Float::class -> {
-            toFloatArray().toList() as List<T>
-        }
-
-        Int::class -> {
-            toIntArray().toList() as List<T>
-        }
-
-        Long::class -> {
-            toLongArray().toList() as List<T>
-        }
-
-        F16::class -> {
-            val storage =
-                this as? io.github.kotlinmania.ug.cpuruntime.CpuStorage.F16Storage
-                    ?: throw UgError.Msg("expected F16Storage")
-            storage.data.toList() as List<T>
-        }
-
-        BF16::class -> {
-            val storage =
-                this as? io.github.kotlinmania.ug.cpuruntime.CpuStorage.BF16Storage
-                    ?: throw UgError.Msg("expected BF16Storage")
-            storage.data.toList() as List<T>
-        }
-
-        else -> {
-            throw UgError.Msg("unsupported type for toVec: ${T::class}")
-        }
+        Float::class -> toVec(WithDType.F32).map { it as T }
+        Int::class -> toVec(WithDType.I32).map { it as T }
+        Long::class -> toVec(WithDType.I64).map { it as T }
+        F16::class -> toVec(WithDType.F16).map { it as T }
+        BF16::class -> toVec(WithDType.BF16).map { it as T }
+        else -> UgError.Msg("unsupported type for toVec: ${T::class}").raise()
     }
 
-public fun <T : Any> Slice.toVec(withDType: WithDType<T>): List<T> {
-    val storage = this as? io.github.kotlinmania.ug.cpuruntime.CpuStorage
-    if (storage != null) {
-        return withDType.fromCpuStorage(storage)
-    }
+public fun Slice.toVec(withDType: F32Type): List<Float> {
+    val storage = this as? CpuStorage ?: CpuStorage.F32Storage(toFloatArray())
+    return withDType.fromCpuStorage(storage)
+}
 
-    return when (withDType.dtype) {
-        DType.F32 -> {
-            val list = toFloatArray().toList()
-            withDType.fromCpuStorage(
-                io.github.kotlinmania.ug.cpuruntime.CpuStorage
-                    .from(list.toFloatArray()),
-            )
-        }
+public fun Slice.toVec(withDType: I32Type): List<Int> {
+    val storage = this as? CpuStorage ?: CpuStorage.I32Storage(toIntArray())
+    return withDType.fromCpuStorage(storage)
+}
 
-        DType.I32 -> {
-            val list = toIntArray().toList()
-            withDType.fromCpuStorage(
-                io.github.kotlinmania.ug.cpuruntime.CpuStorage
-                    .from(list.toIntArray()),
-            )
-        }
+public fun Slice.toVec(withDType: I64Type): List<Long> {
+    val storage = this as? CpuStorage ?: CpuStorage.I64Storage(toLongArray())
+    return withDType.fromCpuStorage(storage)
+}
 
-        DType.I64 -> {
-            val list = toLongArray().toList()
-            withDType.fromCpuStorage(
-                io.github.kotlinmania.ug.cpuruntime.CpuStorage
-                    .from(list.toLongArray()),
-            )
+public fun Slice.toVec(withDType: F16Type): List<F16> {
+    val storage =
+        this as? CpuStorage ?: run {
+            val data = Array(len) { F16() }
+            copyDeviceToHost(data)
+            CpuStorage.F16Storage(data)
         }
+    return withDType.fromCpuStorage(storage)
+}
 
-        DType.F16 -> {
-            val dst =
-                Array(len) {
-                    io.github.kotlinmania.half
-                        .F16()
-                }
-            copyDeviceToHost(dst)
-            withDType.fromCpuStorage(
-                io.github.kotlinmania.ug.cpuruntime.CpuStorage
-                    .F16Storage(dst),
-            )
+public fun Slice.toVec(withDType: BF16Type): List<BF16> {
+    val storage =
+        this as? CpuStorage ?: run {
+            val data = Array(len) { BF16() }
+            copyDeviceToHost(data)
+            CpuStorage.BF16Storage(data)
         }
-
-        DType.BF16 -> {
-            val dst =
-                Array(len) {
-                    io.github.kotlinmania.half
-                        .BF16()
-                }
-            copyDeviceToHost(dst)
-            withDType.fromCpuStorage(
-                io.github.kotlinmania.ug.cpuruntime.CpuStorage
-                    .BF16Storage(dst),
-            )
-        }
-    }
+    return withDType.fromCpuStorage(storage)
 }

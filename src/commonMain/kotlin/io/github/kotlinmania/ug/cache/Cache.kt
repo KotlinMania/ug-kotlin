@@ -25,11 +25,11 @@ public data class NormalizedKernel(
             fun walk(ast: Ast, argMap: Map<ArgId, ArgId>): Ast =
                 when (val in_ = ast.inner) {
                     is AstInner.Id -> {
-                        throw UgError.Msg("unexpected id node")
+                        UgError.Msg("unexpected id node").raise()
                     }
 
                     is AstInner.Load -> {
-                        val src = argMap[in_.src] ?: throw UgError.Msg("BUG: missing arg id ${in_.src}")
+                        val src = argMap[in_.src] ?: UgError.Msg("BUG: missing arg id ${in_.src}").raise()
                         load(src, in_.layout, ast.dtype)
                     }
 
@@ -68,7 +68,7 @@ public data class NormalizedKernel(
                 args.add(Arg.new(newId, arg.type))
             }
             for (op in k.ops) {
-                val dst = argMap[op.dst] ?: throw UgError.Msg("BUG: missing arg id ${op.dst}")
+                val dst = argMap[op.dst] ?: UgError.Msg("BUG: missing arg id ${op.dst}").raise()
                 val value = walk(op.value, argMap)
                 ops.add(store(dst, op.layout, value))
             }

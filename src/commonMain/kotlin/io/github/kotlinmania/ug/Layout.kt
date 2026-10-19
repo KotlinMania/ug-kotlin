@@ -71,38 +71,38 @@ public class Shape(
                 } else if (rVal == 1) {
                     lVal
                 } else {
-                    throw UgError.Msg("shape mismatch in binary op '$op', lhs: $this rhs: $rhs")
+                    UgError.Msg("shape mismatch in binary op '$op', lhs: $this rhs: $rhs").raise()
                 }
         }
         return Shape(bcastDims.toList())
     }
 
     public fun dims0() {
-        if (dims.isNotEmpty()) throw UgError.Msg("unexpected number of dims, expected 0 got ${dims.size} shape $this")
+        if (dims.isNotEmpty()) UgError.Msg("unexpected number of dims, expected 0 got ${dims.size} shape $this").raise()
     }
 
     public fun dims1(): Int {
-        if (dims.size != 1) throw UgError.Msg("unexpected number of dims, expected 1 got ${dims.size} shape $this")
+        if (dims.size != 1) UgError.Msg("unexpected number of dims, expected 1 got ${dims.size} shape $this").raise()
         return dims[0]
     }
 
     public fun dims2(): Pair<Int, Int> {
-        if (dims.size != 2) throw UgError.Msg("unexpected number of dims, expected 2 got ${dims.size} shape $this")
+        if (dims.size != 2) UgError.Msg("unexpected number of dims, expected 2 got ${dims.size} shape $this").raise()
         return Pair(dims[0], dims[1])
     }
 
     public fun dims3(): Triple<Int, Int, Int> {
-        if (dims.size != 3) throw UgError.Msg("unexpected number of dims, expected 3 got ${dims.size} shape $this")
+        if (dims.size != 3) UgError.Msg("unexpected number of dims, expected 3 got ${dims.size} shape $this").raise()
         return Triple(dims[0], dims[1], dims[2])
     }
 
     public fun dims4(): List<Int> {
-        if (dims.size != 4) throw UgError.Msg("unexpected number of dims, expected 4 got ${dims.size} shape $this")
+        if (dims.size != 4) UgError.Msg("unexpected number of dims, expected 4 got ${dims.size} shape $this").raise()
         return dims
     }
 
     public fun dims5(): List<Int> {
-        if (dims.size != 5) throw UgError.Msg("unexpected number of dims, expected 5 got ${dims.size} shape $this")
+        if (dims.size != 5) UgError.Msg("unexpected number of dims, expected 5 got ${dims.size} shape $this").raise()
         return dims
     }
 
@@ -148,7 +148,7 @@ public sealed class D : Dim {
         override fun toIndex(shape: Shape, op: String): Int {
             val rank = shape.rank()
             if (rank >= 1) return rank - 1
-            throw UgError.Msg("dim out of range in '$op', dim: -1, shape: $shape")
+            UgError.Msg("dim out of range in '$op', dim: -1, shape: $shape").raise()
         }
 
         override fun toIndexPlusOne(shape: Shape, op: String): Int = shape.rank()
@@ -158,13 +158,13 @@ public sealed class D : Dim {
         override fun toIndex(shape: Shape, op: String): Int {
             val rank = shape.rank()
             if (rank >= 2) return rank - 2
-            throw UgError.Msg("dim out of range in '$op', dim: -2, shape: $shape")
+            UgError.Msg("dim out of range in '$op', dim: -2, shape: $shape").raise()
         }
 
         override fun toIndexPlusOne(shape: Shape, op: String): Int {
             val rank = shape.rank()
             if (rank >= 1) return rank - 1
-            throw UgError.Msg("dim out of range in '$op', dim: -2, shape: $shape")
+            UgError.Msg("dim out of range in '$op', dim: -2, shape: $shape").raise()
         }
     }
 
@@ -174,13 +174,13 @@ public sealed class D : Dim {
         override fun toIndex(shape: Shape, op: String): Int {
             val rank = shape.rank()
             if (u > 0 && rank >= u) return rank - u
-            throw UgError.Msg("dim out of range in '$op', dim: -$u, shape: $shape")
+            UgError.Msg("dim out of range in '$op', dim: -$u, shape: $shape").raise()
         }
 
         override fun toIndexPlusOne(shape: Shape, op: String): Int {
             val rank = shape.rank()
             if (u > 0 && rank + 1 >= u) return rank + 1 - u
-            throw UgError.Msg("dim out of range in '$op', dim: -$u, shape: $shape")
+            UgError.Msg("dim out of range in '$op', dim: -$u, shape: $shape").raise()
         }
     }
 }
@@ -197,7 +197,7 @@ public val Int.D: Dim get() = DimIndex(this)
 
 public fun Int.toDimIndex(shape: Shape, op: String): Int {
     if (this >= 0) {
-        if (this >= shape.rank()) throw UgError.Msg("dim out of range in '$op', dim: $this, shape: $shape")
+        if (this >= shape.rank()) UgError.Msg("dim out of range in '$op', dim: $this, shape: $shape").raise()
         return this
     }
     return io.github.kotlinmania.ug.D
@@ -207,7 +207,7 @@ public fun Int.toDimIndex(shape: Shape, op: String): Int {
 
 public fun Int.toDimIndexPlusOne(shape: Shape, op: String): Int {
     if (this >= 0) {
-        if (this > shape.rank()) throw UgError.Msg("dim out of range in '$op', dim: $this, shape: $shape")
+        if (this > shape.rank()) UgError.Msg("dim out of range in '$op', dim: $this, shape: $shape").raise()
         return this
     }
     return io.github.kotlinmania.ug.D
@@ -237,7 +237,7 @@ public class Layout(
         val dims = shape.dims
         for (i in 0 until dims.size - 1) {
             if (strides[i] != strides[i + 1] * dims[i + 1]) {
-                throw UgError.Msg("cannot collapse dims, $this")
+                UgError.Msg("cannot collapse dims, $this").raise()
             }
         }
         val stride = strides.lastOrNull() ?: 1
