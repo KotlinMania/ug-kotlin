@@ -139,7 +139,9 @@ configurations.configureEach {
     // proc-macro-kotlin's published Android artifact bundles the JetBrains
     // annotation classes, which duplicate org.jetbrains:annotations on the
     // Android device-test classpath.
-    if (name.contains("androidDeviceTest", ignoreCase = true)) {
+    if (name.contains("androidDeviceTest", ignoreCase = true) ||
+        (name.contains("Android", ignoreCase = true) && name.endsWith("RuntimeClasspath"))
+    ) {
         exclude(group = "org.jetbrains", module = "annotations")
     }
     if (name == "swiftExportClasspath") {

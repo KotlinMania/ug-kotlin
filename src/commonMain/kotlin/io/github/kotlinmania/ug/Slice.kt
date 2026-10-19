@@ -75,20 +75,56 @@ public fun <T : Any> Slice.toVec(withDType: WithDType<T>): List<T> {
     if (storage != null) {
         return withDType.fromCpuStorage(storage)
     }
-    @Suppress("UNCHECKED_CAST")
+
     return when (withDType.dtype) {
-        DType.F32 -> toFloatArray().toList() as List<T>
-        DType.I32 -> toIntArray().toList() as List<T>
-        DType.I64 -> toLongArray().toList() as List<T>
-        DType.F16 -> {
-            val dst = Array(len) { io.github.kotlinmania.half.F16() }
-            copyDeviceToHost(dst)
-            dst.toList() as List<T>
+        DType.F32 -> {
+            val list = toFloatArray().toList()
+            withDType.fromCpuStorage(
+                io.github.kotlinmania.ug.cpuruntime.CpuStorage
+                    .from(list.toFloatArray()),
+            )
         }
-        DType.BF16 -> {
-            val dst = Array(len) { io.github.kotlinmania.half.BF16() }
+
+        DType.I32 -> {
+            val list = toIntArray().toList()
+            withDType.fromCpuStorage(
+                io.github.kotlinmania.ug.cpuruntime.CpuStorage
+                    .from(list.toIntArray()),
+            )
+        }
+
+        DType.I64 -> {
+            val list = toLongArray().toList()
+            withDType.fromCpuStorage(
+                io.github.kotlinmania.ug.cpuruntime.CpuStorage
+                    .from(list.toLongArray()),
+            )
+        }
+
+        DType.F16 -> {
+            val dst =
+                Array(len) {
+                    io.github.kotlinmania.half
+                        .F16()
+                }
             copyDeviceToHost(dst)
-            dst.toList() as List<T>
+            withDType.fromCpuStorage(
+                io.github.kotlinmania.ug.cpuruntime.CpuStorage
+                    .F16Storage(dst),
+            )
+        }
+
+        DType.BF16 -> {
+            val dst =
+                Array(len) {
+                    io.github.kotlinmania.half
+                        .BF16()
+                }
+            copyDeviceToHost(dst)
+            withDType.fromCpuStorage(
+                io.github.kotlinmania.ug.cpuruntime.CpuStorage
+                    .BF16Storage(dst),
+            )
         }
     }
 }
