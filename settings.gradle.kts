@@ -16,3 +16,11 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "ug-kotlin"
+
+listOf(
+    "../half-kotlin",
+).forEach { path ->
+    if (file(path).exists()) {
+        includeBuild(path)
+    }
+}
