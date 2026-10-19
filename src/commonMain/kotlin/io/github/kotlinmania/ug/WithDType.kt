@@ -1,8 +1,8 @@
 // port-lint: source dtype.rs
 package io.github.kotlinmania.ug
 
-import io.github.kotlinmania.half.BF16
-import io.github.kotlinmania.half.F16
+import io.github.kotlinmania.half.BF16 as HalfBF16
+import io.github.kotlinmania.half.F16 as HalfF16
 import io.github.kotlinmania.ug.cpu_runtime.CpuStorage
 
 public interface WithDType<T> {
@@ -67,35 +67,35 @@ public interface WithDType<T> {
                     (storage as? CpuStorage.I64Storage)?.data?.toList() ?: throw UgError.Msg("expected I64Storage")
             }
 
-        public val F16: WithDType<F16> =
-            object : WithDType<F16> {
+        public val F16: WithDType<HalfF16> =
+            object : WithDType<HalfF16> {
                 override val dtype: DType get() = DType.F16
 
-                override fun zero(): F16 = F16()
+                override fun zero(): HalfF16 = HalfF16()
 
-                override fun one(): F16 = F16.fromFloat(1.0f)
+                override fun one(): HalfF16 = HalfF16.fromF32(1.0f)
 
-                override fun createArray(len: Int): List<F16> = Array(len) { F16() }.toList()
+                override fun createArray(len: Int): List<HalfF16> = Array(len) { HalfF16() }.toList()
 
-                override fun toCpuStorage(data: List<F16>): CpuStorage = CpuStorage.F16Storage(data.toTypedArray())
+                override fun toCpuStorage(data: List<HalfF16>): CpuStorage = CpuStorage.F16Storage(data.toTypedArray())
 
-                override fun fromCpuStorage(storage: CpuStorage): List<F16> =
+                override fun fromCpuStorage(storage: CpuStorage): List<HalfF16> =
                     (storage as? CpuStorage.F16Storage)?.data?.toList() ?: throw UgError.Msg("expected F16Storage")
             }
 
-        public val BF16: WithDType<BF16> =
-            object : WithDType<BF16> {
+        public val BF16: WithDType<HalfBF16> =
+            object : WithDType<HalfBF16> {
                 override val dtype: DType get() = DType.BF16
 
-                override fun zero(): BF16 = BF16()
+                override fun zero(): HalfBF16 = HalfBF16()
 
-                override fun one(): BF16 = BF16.fromFloat(1.0f)
+                override fun one(): HalfBF16 = HalfBF16.fromF32(1.0f)
 
-                override fun createArray(len: Int): List<BF16> = Array(len) { BF16() }.toList()
+                override fun createArray(len: Int): List<HalfBF16> = Array(len) { HalfBF16() }.toList()
 
-                override fun toCpuStorage(data: List<BF16>): CpuStorage = CpuStorage.BF16Storage(data.toTypedArray())
+                override fun toCpuStorage(data: List<HalfBF16>): CpuStorage = CpuStorage.BF16Storage(data.toTypedArray())
 
-                override fun fromCpuStorage(storage: CpuStorage): List<BF16> =
+                override fun fromCpuStorage(storage: CpuStorage): List<HalfBF16> =
                     (storage as? CpuStorage.BF16Storage)?.data?.toList() ?: throw UgError.Msg("expected BF16Storage")
             }
     }

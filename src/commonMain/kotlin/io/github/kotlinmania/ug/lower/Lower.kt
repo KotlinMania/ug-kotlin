@@ -20,6 +20,7 @@ import io.github.kotlinmania.ug.lang.ssa.A
 import io.github.kotlinmania.ug.lang.ssa.Instr
 import io.github.kotlinmania.ug.lang.ssa.Special
 import io.github.kotlinmania.ug.lang.ssa.VarId
+import io.github.kotlinmania.ug.lang.ssa.toA
 
 public fun lowerIndexExprNode(node: IndexExprNode): Pair<Id, Block> {
     val dstId = Id.new()
@@ -35,7 +36,7 @@ public fun lowerIndexExprNode(node: IndexExprNode): Pair<Id, Block> {
                         rhs = rhsId.toA(),
                         dtype = DType.I32,
                     )
-                Block(lhsB.instrs + rhsB.instrs + Pair(dstId, instr))
+                Block((lhsB.instrs + rhsB.instrs + Pair(dstId, instr)).toMutableList())
             }
 
             is IndexExpr.Mul -> {
@@ -48,7 +49,7 @@ public fun lowerIndexExprNode(node: IndexExprNode): Pair<Id, Block> {
                         rhs = rhsId.toA(),
                         dtype = DType.I32,
                     )
-                Block(lhsB.instrs + rhsB.instrs + Pair(dstId, instr))
+                Block((lhsB.instrs + rhsB.instrs + Pair(dstId, instr)).toMutableList())
             }
 
             is IndexExpr.Constant -> {

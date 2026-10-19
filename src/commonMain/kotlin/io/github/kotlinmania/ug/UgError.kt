@@ -99,7 +99,7 @@ public sealed class UgError(
     }
 }
 
-public inline fun ugBail(message: String): Nothing = throw UgError.Msg(message)
+public fun ugBail(message: String): Nothing = throw UgError.Msg(message)
 
 public fun <T, U> zip(r1: Result<T>, r2: Result<U>): Result<Pair<T, U>> {
     return if (r1.isSuccess && r2.isSuccess) {

@@ -31,6 +31,8 @@ public data class VarId(
     }
 }
 
+public fun VarId.toA(): A = A.Var(this)
+
 public enum class Special {
     ThreadIdx,
     BlockIdx,
