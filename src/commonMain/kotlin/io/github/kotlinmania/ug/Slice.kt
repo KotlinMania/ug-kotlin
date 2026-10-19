@@ -43,12 +43,12 @@ public inline fun <reified T> Slice.toVec(): List<T> {
         Int::class -> toIntArray().toList() as List<T>
         Long::class -> toLongArray().toList() as List<T>
         F16::class -> {
-            val storage = this as? io.github.kotlinmania.ug.cpu_runtime.CpuStorage.F16Storage
+            val storage = this as? io.github.kotlinmania.ug.cpuruntime.CpuStorage.F16Storage
                 ?: throw UgError.Msg("expected F16Storage")
             storage.data.toList() as List<T>
         }
         BF16::class -> {
-            val storage = this as? io.github.kotlinmania.ug.cpu_runtime.CpuStorage.BF16Storage
+            val storage = this as? io.github.kotlinmania.ug.cpuruntime.CpuStorage.BF16Storage
                 ?: throw UgError.Msg("expected BF16Storage")
             storage.data.toList() as List<T>
         }
@@ -57,7 +57,7 @@ public inline fun <reified T> Slice.toVec(): List<T> {
 }
 
 public fun <T : Any> Slice.toVec(withDType: WithDType<T>): List<T> {
-    val storage = this as? io.github.kotlinmania.ug.cpu_runtime.CpuStorage
+    val storage = this as? io.github.kotlinmania.ug.cpuruntime.CpuStorage
         ?: throw UgError.Msg("expected CpuStorage")
     return withDType.fromCpuStorage(storage)
 }

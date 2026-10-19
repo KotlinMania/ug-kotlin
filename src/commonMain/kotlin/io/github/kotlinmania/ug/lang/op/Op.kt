@@ -221,8 +221,8 @@ public data class Kernel(
         return Kernel(name, args, newOps)
     }
 
-    public fun lower(opts: io.github.kotlinmania.ug.lower_op.Opts = io.github.kotlinmania.ug.lower_op.Opts()): io.github.kotlinmania.ug.lang.ssa.Kernel =
-        io.github.kotlinmania.ug.lower_op.lowerKernel(this, opts)
+    public fun lower(opts: io.github.kotlinmania.ug.lowerop.Opts = io.github.kotlinmania.ug.lowerop.Opts()): io.github.kotlinmania.ug.lang.ssa.Kernel =
+        io.github.kotlinmania.ug.lowerop.lowerKernel(this, opts)
 
     public companion object {
         public fun new(name: String, args: List<Arg>, ops: List<Store>): Kernel = Kernel(name, args, ops)

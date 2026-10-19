@@ -1,5 +1,5 @@
 // port-lint: source cpu_runtime.rs
-package io.github.kotlinmania.ug.cpu_runtime
+package io.github.kotlinmania.ug.cpuruntime
 
 import io.github.kotlinmania.half.BF16
 import io.github.kotlinmania.half.F16
@@ -204,7 +204,7 @@ public object CpuDevice : Device {
     override fun compile(kernel: Kernel, name: String?): CpuFunc {
         val kernelId = KernelId.new().asUsize()
         val funcName = name?.let { "ugc_${it}_$kernelId" } ?: "ugc_$kernelId"
-        val cCode = io.github.kotlinmania.ug.cpu_code_gen.gen(funcName, kernel)
+        val cCode = io.github.kotlinmania.ug.cpucodegen.gen(funcName, kernel)
         return CpuFunc(funcName, kernel, cCode)
     }
 

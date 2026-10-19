@@ -1,5 +1,5 @@
 // port-lint: source lower_op.rs
-package io.github.kotlinmania.ug.lower_op
+package io.github.kotlinmania.ug.lowerop
 
 import io.github.kotlinmania.ug.Const
 import io.github.kotlinmania.ug.DType

@@ -7,7 +7,7 @@ import io.github.kotlinmania.ug.lang.ArgId
 import io.github.kotlinmania.ug.lang.UgType
 import io.github.kotlinmania.ug.lang.op.Ast
 import io.github.kotlinmania.ug.lang.op.AstInner
-import io.github.kotlinmania.ug.lower_op.Opts
+import io.github.kotlinmania.ug.lowerop.Opts
 
 internal class KernelItem(
     val ast: Ast,

@@ -1,11 +1,11 @@
 // port-lint: tests tests/lb_tests.rs
 package io.github.kotlinmania.ug
 
-import io.github.kotlinmania.ug.cpu_runtime.CpuDevice
-import io.github.kotlinmania.ug.cpu_runtime.CpuStorage
+import io.github.kotlinmania.ug.cpuruntime.CpuDevice
+import io.github.kotlinmania.ug.cpuruntime.CpuStorage
 import io.github.kotlinmania.ug.interpreter.Buffer
 import io.github.kotlinmania.ug.interpreter.evalSsa
-import io.github.kotlinmania.ug.lower_op.Opts
+import io.github.kotlinmania.ug.lowerop.Opts
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

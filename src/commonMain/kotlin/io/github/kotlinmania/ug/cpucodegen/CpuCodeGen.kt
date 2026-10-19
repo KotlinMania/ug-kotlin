@@ -1,5 +1,5 @@
 // port-lint: source cpu_code_gen.rs
-package io.github.kotlinmania.ug.cpu_code_gen
+package io.github.kotlinmania.ug.cpucodegen
 
 import io.github.kotlinmania.ug.Const
 import io.github.kotlinmania.ug.DType

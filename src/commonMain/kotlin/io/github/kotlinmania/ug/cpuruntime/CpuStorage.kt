@@ -1,5 +1,5 @@
 // port-lint: source cpu_runtime.rs
-package io.github.kotlinmania.ug.cpu_runtime
+package io.github.kotlinmania.ug.cpuruntime
 
 import io.github.kotlinmania.half.BF16
 import io.github.kotlinmania.half.F16

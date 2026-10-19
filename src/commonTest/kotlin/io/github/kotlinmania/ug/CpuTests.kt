@@ -1,8 +1,8 @@
 // port-lint: tests tests/cpu_tests.rs
 package io.github.kotlinmania.ug
 
-import io.github.kotlinmania.ug.cpu_code_gen.gen
-import io.github.kotlinmania.ug.cpu_runtime.CpuDevice
+import io.github.kotlinmania.ug.cpucodegen.gen
+import io.github.kotlinmania.ug.cpuruntime.CpuDevice
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
