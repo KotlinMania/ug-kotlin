@@ -205,7 +205,7 @@ public fun Int.toDimIndex(shape: Shape, op: String): Int {
         if (this >= shape.rank()) throw UgError.Msg("dim out of range in '$op', dim: $this, shape: $shape")
         return this
     }
-    return D.Minus(-this).toIndex(shape, op)
+    return io.github.kotlinmania.ug.D.Minus(-this).toIndex(shape, op)
 }
 
 public fun Int.toDimIndexPlusOne(shape: Shape, op: String): Int {
@@ -213,7 +213,7 @@ public fun Int.toDimIndexPlusOne(shape: Shape, op: String): Int {
         if (this > shape.rank()) throw UgError.Msg("dim out of range in '$op', dim: $this, shape: $shape")
         return this
     }
-    return D.Minus(-this).toIndexPlusOne(shape, op)
+    return io.github.kotlinmania.ug.D.Minus(-this).toIndexPlusOne(shape, op)
 }
 
 public class Layout(
