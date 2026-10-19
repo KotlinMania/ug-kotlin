@@ -3,6 +3,7 @@ package io.github.kotlinmania.ug
 
 import io.github.kotlinmania.ug.interpreter.Buffer
 import io.github.kotlinmania.ug.interpreter.evalSsa
+import io.github.kotlinmania.ug.lower.lower
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -122,7 +123,7 @@ class BasicTests {
     @Test
     fun affine() {
         val layout = Layout.fromShape(4)
-        val ptr = io.github.kotlinmania.ug.lang.op.Arg.ptr(DType.F32)
+        val ptr = io.github.kotlinmania.ug.lang.Arg.ptr(DType.F32)
         val src = io.github.kotlinmania.ug.lang.op.load(ptr.id, layout, DType.F32)
         val sub = io.github.kotlinmania.ug.lang.op.broadcastBinary(io.github.kotlinmania.ug.lang.BinaryOp.Sub, src, io.github.kotlinmania.ug.lang.op.cst(0.5f))
         val mul = io.github.kotlinmania.ug.lang.op.broadcastBinary(io.github.kotlinmania.ug.lang.BinaryOp.Mul, sub, io.github.kotlinmania.ug.lang.op.cst(3.0f))
