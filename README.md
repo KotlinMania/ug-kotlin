@@ -35,7 +35,7 @@ Experimental compiler for deep-learning models inspired by
 
 ```kotlin
 dependencies {
-    implementation("io.github.kotlinmania:ug-kotlin:0.1.0")
+    implementation("io.github.kotlinmania:ug-kotlin:0.1.1")
 }
 ```
 
