@@ -6,7 +6,7 @@ import io.github.kotlinmania.ug.DType
 import io.github.kotlinmania.ug.UgError
 import io.github.kotlinmania.ug.lang.BinaryOp
 import io.github.kotlinmania.ug.lang.ReduceOp
-import io.github.kotlinmania.ug.lang.Type
+import io.github.kotlinmania.ug.lang.UgType
 import io.github.kotlinmania.ug.lang.UnaryOp
 import io.github.kotlinmania.ug.lang.ssa.A
 import io.github.kotlinmania.ug.lang.ssa.Instr
@@ -63,8 +63,8 @@ public fun gen(w: Appendable, funcName: String, kernel: Kernel) {
         val delim = if (isLast) "" else ","
         val tyStr =
             when (val t = kernelArg.arg.type) {
-                is Type.Value -> formatD(t.dtype)
-                is Type.Ptr -> "${formatD(t.dtype)}*"
+                is UgType.Value -> formatD(t.dtype)
+                is UgType.Ptr -> "${formatD(t.dtype)}*"
             }
         w.append("  ").append(tyStr).append(' ').append(formatV(VarId.new(kernelArg.index))).append(delim).append('\n')
     }

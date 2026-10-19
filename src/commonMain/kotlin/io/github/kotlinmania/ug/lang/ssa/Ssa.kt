@@ -10,7 +10,7 @@ import io.github.kotlinmania.ug.lang.BinaryOp
 import io.github.kotlinmania.ug.lang.FlopsMem
 import io.github.kotlinmania.ug.lang.LaunchConfig
 import io.github.kotlinmania.ug.lang.ReduceOp
-import io.github.kotlinmania.ug.lang.Type
+import io.github.kotlinmania.ug.lang.UgType
 import io.github.kotlinmania.ug.lang.UnaryOp
 
 public data class VarId(
@@ -245,7 +245,7 @@ public data class Kernel(
                         throw UgError.Msg("unexpected order for arguments in kernel $instrs")
                     }
                     val argId = ArgId.new()
-                    val arg = Arg.new(argId, Type.Ptr(instr.dtype))
+                    val arg = Arg.new(argId, UgType.Ptr(instr.dtype))
                     args.add(KernelArg(arg, lineNo))
                 }
             }

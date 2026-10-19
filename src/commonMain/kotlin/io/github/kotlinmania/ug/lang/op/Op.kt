@@ -85,9 +85,6 @@ public data class Ast(
     public val dtype: DType,
     public val shape: Shape,
 ) : Comparable<Ast> {
-    public fun dtype(): DType = dtype
-
-    public fun shape(): Shape = shape
 
     public fun argIds(): Set<ArgId> {
         val ids = mutableSetOf<ArgId>()
@@ -198,7 +195,7 @@ public data class Kernel(
                     binary(in_.op, lhs, rhs)
                 }
 
-                is AstInner.Load -> load(in_.src, in_.layout.compressAll(), v.dtype())
+                is AstInner.Load -> load(in_.src, in_.layout.compressAll(), v.dtype)
                 is AstInner.Reduce -> throw UgError.Msg("unexpected result in optimize step")
                 is AstInner.LayoutOperation ->
                     when (in_.op) {

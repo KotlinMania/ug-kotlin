@@ -4,7 +4,7 @@ package io.github.kotlinmania.ug
 import io.github.kotlinmania.ug.cache.CompilationCache
 import io.github.kotlinmania.ug.cache.NormalizedKernel
 import io.github.kotlinmania.ug.lang.ArgId
-import io.github.kotlinmania.ug.lang.Type
+import io.github.kotlinmania.ug.lang.UgType
 import io.github.kotlinmania.ug.lang.op.Ast
 import io.github.kotlinmania.ug.lang.op.AstInner
 import io.github.kotlinmania.ug.lower_op.Opts
@@ -18,7 +18,7 @@ public class KernelItem(
     public fun kernel(): io.github.kotlinmania.ug.lang.op.Kernel {
         val kernelArgs =
             args.map { (id, lb) ->
-                io.github.kotlinmania.ug.lang.Arg(id, Type.Ptr(lb.dtype))
+                io.github.kotlinmania.ug.lang.Arg(id, UgType.Ptr(lb.dtype))
             }
         val layout = dstLayout ?: Layout.fromShape(dst.second.shape)
         val sto = io.github.kotlinmania.ug.lang.op.store(dst.first, layout, ast)

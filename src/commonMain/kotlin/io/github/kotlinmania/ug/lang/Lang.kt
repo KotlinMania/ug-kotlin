@@ -56,14 +56,14 @@ public data class LaunchConfig(
     }
 }
 
-public sealed class Type : Comparable<Type> {
+public sealed class UgType : Comparable<UgType> {
     public data class Value(
         public val dtype: DType,
-    ) : Type()
+    ) : UgType()
 
     public data class Ptr(
         public val dtype: DType,
-    ) : Type()
+    ) : UgType()
 
     public fun sizeInBytes(): Int =
         when (this) {
@@ -71,7 +71,7 @@ public sealed class Type : Comparable<Type> {
             is Value -> dtype.sizeInBytes
         }
 
-    override fun compareTo(other: Type): Int = this.toString().compareTo(other.toString())
+    override fun compareTo(other: UgType): Int = this.toString().compareTo(other.toString())
 }
 
 public data class ArgId(
@@ -96,20 +96,20 @@ public data class ArgId(
 
 public data class Arg(
     public val id: ArgId,
-    public val type: Type,
+    public val type: UgType,
 ) : Comparable<Arg> {
     public fun id(): ArgId = id
 
-    public fun type_(): Type = type
+    public fun type_(): UgType = type
 
     override fun compareTo(other: Arg): Int = id.compareTo(other.id)
 
     public companion object {
-        public fun new(id: ArgId, type: Type): Arg = Arg(id, type)
+        public fun new(id: ArgId, type: UgType): Arg = Arg(id, type)
 
-        public fun value(dtype: DType): Arg = Arg(ArgId.new(), Type.Value(dtype))
+        public fun value(dtype: DType): Arg = Arg(ArgId.new(), UgType.Value(dtype))
 
-        public fun ptr(dtype: DType): Arg = Arg(ArgId.new(), Type.Ptr(dtype))
+        public fun ptr(dtype: DType): Arg = Arg(ArgId.new(), UgType.Ptr(dtype))
     }
 }
 
@@ -209,8 +209,6 @@ public data class ExprNode(
     public val expr: Expr,
     public val dtype: DType,
 ) {
-    public fun dtype(): DType = dtype
-
     public fun unary(op: UnaryOp): ExprNode = ExprNode(Expr.Unary(op, this), dtype)
 
     public fun binary(rhs: ExprNode, op: BinaryOp): ExprNode = ExprNode(Expr.Binary(op, this, rhs), dtype)
@@ -243,8 +241,8 @@ public data class ExprNode(
         ): ExprNode {
             val dtype =
                 when (val t = ptr.type) {
-                    is Type.Ptr -> t.dtype
-                    is Type.Value -> throw UgError.Msg("non-pointer arguments are not supported yet")
+                    is UgType.Ptr -> t.dtype
+                    is UgType.Value -> throw UgError.Msg("non-pointer arguments are not supported yet")
                 }
             val ss = StridedSlice(ptr, offset, len, stride)
             return ExprNode(Expr.Load(ss), dtype)

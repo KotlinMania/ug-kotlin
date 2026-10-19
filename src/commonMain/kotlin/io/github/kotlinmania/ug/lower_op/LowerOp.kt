@@ -13,7 +13,7 @@ import io.github.kotlinmania.ug.lang.ArgId
 import io.github.kotlinmania.ug.lang.BinaryOp
 import io.github.kotlinmania.ug.lang.LaunchConfig
 import io.github.kotlinmania.ug.lang.ReduceOp
-import io.github.kotlinmania.ug.lang.Type
+import io.github.kotlinmania.ug.lang.UgType
 import io.github.kotlinmania.ug.lang.op.Ast
 import io.github.kotlinmania.ug.lang.op.AstInner
 import io.github.kotlinmania.ug.lang.op.Kernel
@@ -304,8 +304,8 @@ public fun lowerKernel(
     for ((index, arg) in kernel.args.withIndex()) {
         val dtype =
             when (val t = arg.type) {
-                is Type.Ptr -> t.dtype
-                is Type.Value -> throw UgError.Msg("non-pointer arguments are not supported yet")
+                is UgType.Ptr -> t.dtype
+                is UgType.Value -> throw UgError.Msg("non-pointer arguments are not supported yet")
             }
         val id = block.push(Instr.DefineGlobal(index = index, dtype = dtype))
         perArg[arg.id] = id.toVarId()

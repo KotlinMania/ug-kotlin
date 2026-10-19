@@ -15,7 +15,7 @@ import io.github.kotlinmania.ug.lang.IndexExprNode
 import io.github.kotlinmania.ug.lang.Kernel
 import io.github.kotlinmania.ug.lang.Ops
 import io.github.kotlinmania.ug.lang.StridedSlice
-import io.github.kotlinmania.ug.lang.Type
+import io.github.kotlinmania.ug.lang.UgType
 import io.github.kotlinmania.ug.lang.ssa.A
 import io.github.kotlinmania.ug.lang.ssa.Instr
 import io.github.kotlinmania.ug.lang.ssa.Special
@@ -162,8 +162,8 @@ public fun lowerKernel(kernel: Kernel): io.github.kotlinmania.ug.lang.ssa.Kernel
         val id = Id.new()
         val dtype =
             when (val t = arg.type) {
-                is Type.Ptr -> t.dtype
-                is Type.Value -> throw UgError.Msg("non-pointer arguments are not supported yet")
+                is UgType.Ptr -> t.dtype
+                is UgType.Value -> throw UgError.Msg("non-pointer arguments are not supported yet")
             }
         instrs.add(Pair(id, Instr.DefineGlobal(index, dtype)))
         perArg[arg.id] = id.toVarId()
