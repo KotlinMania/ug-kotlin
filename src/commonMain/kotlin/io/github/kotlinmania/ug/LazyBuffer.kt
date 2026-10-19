@@ -169,7 +169,7 @@ public class LazyBuffer(
 
     public fun elemCount(): Int = inner.shape.numElements
 
-    public fun dims(): IntArray = inner.shape.dims
+    public fun dims(): List<Int> = inner.shape.dims
 
     public fun dims0(): Unit = inner.shape.dims0()
 
@@ -319,7 +319,7 @@ public class LazyBuffer(
         val rdim = rhsDims.size
 
         if (dim < 2 || rdim < 2) {
-            ugBail("shape mismatch in matmul ${lhsDims.contentToString()} ${rhsDims.contentToString()}")
+            ugBail("shape mismatch in matmul $lhsDims $rhsDims")
         }
 
         val m = lhsDims[dim - 2]
@@ -334,7 +334,7 @@ public class LazyBuffer(
         val lhsBsz = lhsDims.take(dim - 2).fold(1) { acc, v -> acc * v }
         val rhsBsz = rhsDims.take(rdim - 2).fold(1) { acc, v -> acc * v }
         if (k != k2 || lhsBsz != rhsBsz) {
-            ugBail("shape mismatch in matmul ${lhsDims.contentToString()} ${rhsDims.contentToString()}")
+            ugBail("shape mismatch in matmul $lhsDims $rhsDims")
         }
         val bmnk = listOf(lhsBsz, m, n, k)
         val shapeList = lhsDims.take(dim - 2).toMutableList()
@@ -347,7 +347,7 @@ public class LazyBuffer(
                 op = Op.MatMul(this, rhs, bmnk, transpose),
                 dtype = dtype,
                 device = device,
-                shape = Shape(shapeList.toIntArray()),
+                shape = Shape(shapeList),
             )
         return LazyBuffer(inner)
     }
@@ -382,7 +382,7 @@ public class LazyBuffer(
                 op = Op.Layout(LayoutOp.SplitDim(dim = d, lhs = d, rhs = d + 1), this),
                 dtype = dtype,
                 device = device,
-                shape = Shape(dimsList.toIntArray()),
+                shape = Shape(dimsList),
             )
         return LazyBuffer(inner)
     }
@@ -402,7 +402,7 @@ public class LazyBuffer(
                 op = Op.Layout(LayoutOp.MergeDims(dim = d, lhs = d, rhs = d + 1), this),
                 dtype = dtype,
                 device = device,
-                shape = Shape(dimsList.toIntArray()),
+                shape = Shape(dimsList),
             )
         return LazyBuffer(inner)
     }
@@ -411,10 +411,10 @@ public class LazyBuffer(
         val d = dim.toIndex(shape, "squeeze")
         val dimsList = dims().toMutableList()
         if (dimsList[d] != 1) {
-            ugBail("cannot squeeze on dim $d for shape ${dims().contentToString()}")
+            ugBail("cannot squeeze on dim $d for shape ${dims()}")
         }
         dimsList.removeAt(d)
-        return reshape(Shape(dimsList.toIntArray()))
+        return reshape(Shape(dimsList))
     }
 
     public fun getOnDim(dim: Dim, index: Int): LazyBuffer {
@@ -429,7 +429,7 @@ public class LazyBuffer(
         val dimsList = dims().toMutableList()
         val d = dim.toIndexPlusOne(shape, "unsqueeze")
         dimsList.add(d, 1)
-        return reshape(Shape(dimsList.toIntArray()))
+        return reshape(Shape(dimsList))
     }
 
     public fun reshape(s: Shape): LazyBuffer {
@@ -468,7 +468,7 @@ public class LazyBuffer(
                 op = Op.Layout(LayoutOp.Narrow(dim = d, offset = offset), this),
                 dtype = dtype,
                 device = device,
-                shape = Shape(dimsList.toIntArray()),
+                shape = Shape(dimsList),
             )
         return LazyBuffer(inner)
     }
@@ -520,7 +520,7 @@ public class LazyBuffer(
                 op = Op.Layout(LayoutOp.Transpose(dim1 = d1, dim2 = d2), this),
                 dtype = dtype,
                 device = device,
-                shape = Shape(dimsList.toIntArray()),
+                shape = Shape(dimsList),
             )
         return LazyBuffer(inner)
     }
@@ -753,7 +753,7 @@ public class LazyBuffer(
                 stride *= dimLen
             }
             var offset = 0
-            var vs = allocUninit(arg0.dtype, Shape(dimsList.toIntArray()), arg0.device)
+            var vs = allocUninit(arg0.dtype, Shape(dimsList), arg0.device)
             for (arg in args) {
                 val dstLayout = io.github.kotlinmania.ug.Layout.fromShape(arg.shape).setOffset(offset * stride)
                 vs = vs.setL(arg, dstLayout)

@@ -45,6 +45,10 @@ public data class Opts(
         copy(
             threadBlock = ThreadBlock(dim = dim, blockDim = blockDim),
         )
+
+    public companion object {
+        public fun default(): Opts = Opts()
+    }
 }
 
 public sealed class IndexFormula {

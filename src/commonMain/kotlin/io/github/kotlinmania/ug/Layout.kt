@@ -7,12 +7,17 @@ public class Shape(
     public val dims: List<Int> = dims.toList()
 
     public constructor(vararg dims: Int) : this(dims.toList())
+    public constructor(dims: IntArray) : this(dims.toList())
 
     public fun numElements(): Int = if (dims.isEmpty()) 1 else dims.fold(1) { acc, d -> acc * d }
+
+    public val numElements: Int get() = numElements()
 
     public fun elemCount(): Int = numElements()
 
     public fun rank(): Int = dims.size
+
+    public val rank: Int get() = rank()
 
     public fun intoDims(): List<Int> = dims
 
@@ -185,6 +190,16 @@ public sealed class D : Dim {
     }
 }
 
+public data class DimIndex(
+    public val index: Int,
+) : Dim {
+    override fun toIndex(shape: Shape, op: String): Int = index.toDimIndex(shape, op)
+
+    override fun toIndexPlusOne(shape: Shape, op: String): Int = index.toDimIndexPlusOne(shape, op)
+}
+
+public val Int.D: Dim get() = DimIndex(this)
+
 public fun Int.toDimIndex(shape: Shape, op: String): Int {
     if (this >= 0) {
         if (this >= shape.rank()) throw UgError.Msg("dim out of range in '$op', dim: $this, shape: $shape")
@@ -247,9 +262,18 @@ public class Layout(
 
     public fun numElements(): Int = shape.numElements()
 
+    public val numElements: Int get() = numElements()
+
     public val dims: List<Int> get() = shape.dims
 
     public fun rank(): Int = shape.rank()
+
+    public val rank: Int get() = rank()
+
+    public fun setOffset(newOffset: Int): Layout {
+        offset = newOffset
+        return this
+    }
 
     public fun cContiguous(): Boolean {
         var prodL = 1
@@ -298,6 +322,8 @@ public class Layout(
         public fun fromShape(vararg dims: Int): Layout = fromShape(Shape(*dims))
 
         public fun fromShape(dims: List<Int>): Layout = fromShape(Shape(dims))
+
+        public fun fromShape(dims: IntArray): Layout = fromShape(Shape(dims))
 
         public fun fromShape(dim: Int): Layout = fromShape(Shape(dim))
     }

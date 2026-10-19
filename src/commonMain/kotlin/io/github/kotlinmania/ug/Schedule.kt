@@ -20,7 +20,7 @@ public class KernelItem(
     public fun kernel(): io.github.kotlinmania.ug.lang.op.Kernel {
         val kernelArgs =
             args.map { (id, lb) ->
-                io.github.kotlinmania.ug.lang.op.Arg(id, Type.Ptr(lb.dtype))
+                io.github.kotlinmania.ug.lang.Arg(id, Type.Ptr(lb.dtype))
             }
         val layout = dstLayout ?: Layout.fromShape(dst.second.shape)
         val sto = io.github.kotlinmania.ug.lang.op.store(dst.first, layout, ast)
@@ -103,7 +103,7 @@ public class CompiledSchedule(
 
                     val lhsL =
                         if (lhsRank < rhsRank) {
-                            val prefix = IntArray(rhsRank - lhsRank) { 1 }
+                            val prefix = List(rhsRank - lhsRank) { 1 }
                             Layout.fromShape(Shape(prefix + lhsDims))
                         } else {
                             Layout.fromShape(lhs.shape)
@@ -111,7 +111,7 @@ public class CompiledSchedule(
 
                     val rhsL0 =
                         if (rhsRank < lhsRank) {
-                            val prefix = IntArray(lhsRank - rhsRank) { 1 }
+                            val prefix = List(lhsRank - rhsRank) { 1 }
                             Layout.fromShape(Shape(prefix + rhsDims))
                         } else {
                             Layout.fromShape(rhs.shape)

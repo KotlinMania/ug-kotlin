@@ -417,6 +417,6 @@ public fun LazyBuffer.formatTensor(options: PrinterOptions = printOptions()): St
             sb.append('\n')
         }
     }
-    sb.append("Tensor[${dims().contentToString()}, ${dtype.asStr()}]")
+    sb.append("Tensor[${dims()}, ${dtype.asStr()}]")
     return sb.toString()
 }
