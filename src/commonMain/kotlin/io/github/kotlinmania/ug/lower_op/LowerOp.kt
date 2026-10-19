@@ -395,3 +395,6 @@ public fun lowerKernel(
     val cfg = LaunchConfig(gridDim = gridDim, blockDim = blockDim, sharedMem = 0)
     return io.github.kotlinmania.ug.lang.ssa.Kernel(instrs, ssaArgs, cfg)
 }
+
+public fun Kernel.lower(opts: Opts = Opts.default()): io.github.kotlinmania.ug.lang.ssa.Kernel =
+    lowerKernel(this, opts)

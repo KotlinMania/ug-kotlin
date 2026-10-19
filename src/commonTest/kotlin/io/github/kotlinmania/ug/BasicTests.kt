@@ -4,6 +4,7 @@ package io.github.kotlinmania.ug
 import io.github.kotlinmania.ug.interpreter.Buffer
 import io.github.kotlinmania.ug.interpreter.evalSsa
 import io.github.kotlinmania.ug.lower.lower
+import io.github.kotlinmania.ug.lower_op.lower
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
