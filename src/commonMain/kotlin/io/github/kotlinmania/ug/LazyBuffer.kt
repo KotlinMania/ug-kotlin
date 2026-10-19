@@ -179,7 +179,7 @@ public class LazyBuffer(
 
     public fun dims3(): Triple<Int, Int, Int> = inner.shape.dims3()
 
-    public fun rank(): Int = inner.shape.rank
+    public fun rank(): Int = inner.shape.rank()
 
     public fun unary(op: UnaryOp): LazyBuffer {
         val inner =
@@ -474,10 +474,10 @@ public class LazyBuffer(
     }
 
     public fun broadcast(s: Shape): LazyBuffer {
-        if (rank() > s.rank) {
+        if (rank() > s.rank()) {
             ugBail("target shape $s has less dimensions than original shape $shape")
         }
-        val insertedDims = s.rank - rank()
+        val insertedDims = s.rank() - rank()
         val broadcastedDims = (0 until insertedDims).toMutableList()
         for ((dimIdx, dimLen) in dims().withIndex()) {
             val targetIdx = dimIdx + insertedDims

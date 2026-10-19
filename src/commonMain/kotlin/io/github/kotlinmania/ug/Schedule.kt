@@ -209,8 +209,8 @@ public class Schedule(
                             val opts =
                                 if (device.useGrid() &&
                                     optKernel.ops.size == 1 &&
-                                    optKernel.ops[0].layout.rank >= 1 &&
-                                    optKernel.ops[0].layout.numElements >= 1
+                                    optKernel.ops[0].layout.rank() >= 1 &&
+                                    optKernel.ops[0].layout.numElements() >= 1
                                 ) {
                                     val dims =
                                         optKernel.ops[0]
