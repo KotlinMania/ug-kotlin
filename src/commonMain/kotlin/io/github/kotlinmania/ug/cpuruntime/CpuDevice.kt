@@ -87,15 +87,28 @@ public class MatMul(
                 2 -> {
                     val s0 = lhsPrefix[0]
                     val s1 = lhsPrefix[1]
-                    if (s0 == s1 * lhsL.dims[1]) s1
-                    else if (lhsL.dims[0] == 1) s1
-                    else if (lhsL.dims[1] == 1) s0
-                    else throw stridingError(lhsL, rhsL, "non-contiguous lhs")
+                    if (s0 == s1 * lhsL.dims[1]) {
+                        s1
+                    } else if (lhsL.dims[0] == 1) {
+                        s1
+                    } else if (lhsL.dims[1] == 1) {
+                        s0
+                    } else {
+                        throw stridingError(lhsL, rhsL, "non-contiguous lhs")
+                    }
                 }
 
-                1 -> lhsPrefix[0]
-                0 -> m * k
-                else -> throw stridingError(lhsL, rhsL, "non-contiguous lhs")
+                1 -> {
+                    lhsPrefix[0]
+                }
+
+                0 -> {
+                    m * k
+                }
+
+                else -> {
+                    throw stridingError(lhsL, rhsL, "non-contiguous lhs")
+                }
             }
 
         val rhsPrefix = if (rank >= 2) rhsStride.subList(0, rank - 2) else emptyList()
@@ -104,15 +117,28 @@ public class MatMul(
                 2 -> {
                     val s0 = rhsPrefix[0]
                     val s1 = rhsPrefix[1]
-                    if (s0 == s1 * rhsL.dims[1]) s1
-                    else if (rhsL.dims[0] == 1) s1
-                    else if (rhsL.dims[1] == 1) s0
-                    else throw stridingError(lhsL, rhsL, "non-contiguous rhs")
+                    if (s0 == s1 * rhsL.dims[1]) {
+                        s1
+                    } else if (rhsL.dims[0] == 1) {
+                        s1
+                    } else if (rhsL.dims[1] == 1) {
+                        s0
+                    } else {
+                        throw stridingError(lhsL, rhsL, "non-contiguous rhs")
+                    }
                 }
 
-                1 -> rhsPrefix[0]
-                0 -> n * k
-                else -> throw stridingError(lhsL, rhsL, "non-contiguous rhs")
+                1 -> {
+                    rhsPrefix[0]
+                }
+
+                0 -> {
+                    n * k
+                }
+
+                else -> {
+                    throw stridingError(lhsL, rhsL, "non-contiguous rhs")
+                }
             }
 
         return Pair(aSkip, bSkip)
@@ -182,7 +208,9 @@ public class MatMul(
                 gemm(dst.data, lhs.data, lhsL, rhs.data, rhsL)
             }
 
-            else -> throw UgError.Msg("incorrect dtypes for matmul, dst: ${dst.dtype}, lhs: ${lhs.dtype}, rhs: ${rhs.dtype}")
+            else -> {
+                throw UgError.Msg("incorrect dtypes for matmul, dst: ${dst.dtype}, lhs: ${lhs.dtype}, rhs: ${rhs.dtype}")
+            }
         }
     }
 }
@@ -204,7 +232,9 @@ public object CpuDevice : Device {
     override fun compile(kernel: Kernel, name: String?): CpuFunc {
         val kernelId = KernelId.new().asUsize()
         val funcName = name?.let { "ugc_${it}_$kernelId" } ?: "ugc_$kernelId"
-        val cCode = io.github.kotlinmania.ug.cpucodegen.gen(funcName, kernel)
+        val cCode =
+            io.github.kotlinmania.ug.cpucodegen
+                .gen(funcName, kernel)
         return CpuFunc(funcName, kernel, cCode)
     }
 

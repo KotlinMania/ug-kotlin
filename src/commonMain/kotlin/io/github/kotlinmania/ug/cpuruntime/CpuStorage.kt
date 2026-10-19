@@ -73,7 +73,9 @@ public sealed class CpuStorage : Slice {
                 src.copyInto(data)
             }
 
-            else -> throw UgError.Msg("htod dtype mismatch, dst $dtype, src F32")
+            else -> {
+                throw UgError.Msg("htod dtype mismatch, dst $dtype, src F32")
+            }
         }
     }
 
@@ -84,7 +86,9 @@ public sealed class CpuStorage : Slice {
                 src.copyInto(data)
             }
 
-            else -> throw UgError.Msg("htod dtype mismatch, dst $dtype, src I32")
+            else -> {
+                throw UgError.Msg("htod dtype mismatch, dst $dtype, src I32")
+            }
         }
     }
 
@@ -95,7 +99,9 @@ public sealed class CpuStorage : Slice {
                 src.copyInto(data)
             }
 
-            else -> throw UgError.Msg("htod dtype mismatch, dst $dtype, src I64")
+            else -> {
+                throw UgError.Msg("htod dtype mismatch, dst $dtype, src I64")
+            }
         }
     }
 
@@ -106,7 +112,9 @@ public sealed class CpuStorage : Slice {
                 src.copyInto(data)
             }
 
-            else -> throw UgError.Msg("htod dtype mismatch, dst $dtype, src F16")
+            else -> {
+                throw UgError.Msg("htod dtype mismatch, dst $dtype, src F16")
+            }
         }
     }
 
@@ -117,7 +125,9 @@ public sealed class CpuStorage : Slice {
                 src.copyInto(data)
             }
 
-            else -> throw UgError.Msg("htod dtype mismatch, dst $dtype, src BF16")
+            else -> {
+                throw UgError.Msg("htod dtype mismatch, dst $dtype, src BF16")
+            }
         }
     }
 
@@ -128,7 +138,9 @@ public sealed class CpuStorage : Slice {
                 data.copyInto(dst)
             }
 
-            else -> throw UgError.Msg("dtoh dtype mismatch, dst F32, src $dtype")
+            else -> {
+                throw UgError.Msg("dtoh dtype mismatch, dst F32, src $dtype")
+            }
         }
     }
 
@@ -139,7 +151,9 @@ public sealed class CpuStorage : Slice {
                 data.copyInto(dst)
             }
 
-            else -> throw UgError.Msg("dtoh dtype mismatch, dst I32, src $dtype")
+            else -> {
+                throw UgError.Msg("dtoh dtype mismatch, dst I32, src $dtype")
+            }
         }
     }
 
@@ -150,7 +164,9 @@ public sealed class CpuStorage : Slice {
                 data.copyInto(dst)
             }
 
-            else -> throw UgError.Msg("dtoh dtype mismatch, dst I64, src $dtype")
+            else -> {
+                throw UgError.Msg("dtoh dtype mismatch, dst I64, src $dtype")
+            }
         }
     }
 
@@ -161,7 +177,9 @@ public sealed class CpuStorage : Slice {
                 data.copyInto(dst)
             }
 
-            else -> throw UgError.Msg("dtoh dtype mismatch, dst F16, src $dtype")
+            else -> {
+                throw UgError.Msg("dtoh dtype mismatch, dst F16, src $dtype")
+            }
         }
     }
 
@@ -172,7 +190,9 @@ public sealed class CpuStorage : Slice {
                 data.copyInto(dst)
             }
 
-            else -> throw UgError.Msg("dtoh dtype mismatch, dst BF16, src $dtype")
+            else -> {
+                throw UgError.Msg("dtoh dtype mismatch, dst BF16, src $dtype")
+            }
         }
     }
 

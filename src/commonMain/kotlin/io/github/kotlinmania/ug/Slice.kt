@@ -37,27 +37,42 @@ public interface Slice {
 }
 
 @Suppress("UNCHECKED_CAST")
-public inline fun <reified T> Slice.toVec(): List<T> {
-    return when (T::class) {
-        Float::class -> toFloatArray().toList() as List<T>
-        Int::class -> toIntArray().toList() as List<T>
-        Long::class -> toLongArray().toList() as List<T>
+public inline fun <reified T> Slice.toVec(): List<T> =
+    when (T::class) {
+        Float::class -> {
+            toFloatArray().toList() as List<T>
+        }
+
+        Int::class -> {
+            toIntArray().toList() as List<T>
+        }
+
+        Long::class -> {
+            toLongArray().toList() as List<T>
+        }
+
         F16::class -> {
-            val storage = this as? io.github.kotlinmania.ug.cpuruntime.CpuStorage.F16Storage
-                ?: throw UgError.Msg("expected F16Storage")
+            val storage =
+                this as? io.github.kotlinmania.ug.cpuruntime.CpuStorage.F16Storage
+                    ?: throw UgError.Msg("expected F16Storage")
             storage.data.toList() as List<T>
         }
+
         BF16::class -> {
-            val storage = this as? io.github.kotlinmania.ug.cpuruntime.CpuStorage.BF16Storage
-                ?: throw UgError.Msg("expected BF16Storage")
+            val storage =
+                this as? io.github.kotlinmania.ug.cpuruntime.CpuStorage.BF16Storage
+                    ?: throw UgError.Msg("expected BF16Storage")
             storage.data.toList() as List<T>
         }
-        else -> throw UgError.Msg("unsupported type for toVec: ${T::class}")
+
+        else -> {
+            throw UgError.Msg("unsupported type for toVec: ${T::class}")
+        }
     }
-}
 
 public fun <T : Any> Slice.toVec(withDType: WithDType<T>): List<T> {
-    val storage = this as? io.github.kotlinmania.ug.cpuruntime.CpuStorage
-        ?: throw UgError.Msg("expected CpuStorage")
+    val storage =
+        this as? io.github.kotlinmania.ug.cpuruntime.CpuStorage
+            ?: throw UgError.Msg("expected CpuStorage")
     return withDType.fromCpuStorage(storage)
 }

@@ -18,10 +18,13 @@ internal class KernelItem(
     fun kernel(): io.github.kotlinmania.ug.lang.op.Kernel {
         val kernelArgs =
             args.map { (id, lb) ->
-                io.github.kotlinmania.ug.lang.Arg(id, UgType.Ptr(lb.dtype))
+                io.github.kotlinmania.ug.lang
+                    .Arg(id, UgType.Ptr(lb.dtype))
             }
         val layout = dstLayout ?: Layout.fromShape(dst.second.shape)
-        val sto = io.github.kotlinmania.ug.lang.op.store(dst.first, layout, ast)
+        val sto =
+            io.github.kotlinmania.ug.lang.op
+                .store(dst.first, layout, ast)
         return io.github.kotlinmania.ug.lang.op.Kernel(
             name = "realize_${dst.second.id.id}",
             args = kernelArgs,
@@ -163,7 +166,7 @@ public class Schedule internal constructor(
         for (item in items) {
             val call =
                 when (item) {
-                    is ScheduleItem.MatMul ->
+                    is ScheduleItem.MatMul -> {
                         Func.MatMul(
                             dst = item.dst,
                             lhs = item.lhs,
@@ -171,12 +174,14 @@ public class Schedule internal constructor(
                             bmnk = item.bmnk,
                             transpose = item.transpose,
                         )
+                    }
 
-                    is ScheduleItem.Custom ->
+                    is ScheduleItem.Custom -> {
                         Func.Custom(
                             f = item.f,
                             args = item.args,
                         )
+                    }
 
                     is ScheduleItem.Ssa -> {
                         val ssa = item.ssa
@@ -220,7 +225,8 @@ public class Schedule internal constructor(
                                             .map { Pair(it.index, it.value) }
                                             .sortedByDescending { it.second }
                                     if (dims.size >= 2 && dims[1].second > 1) {
-                                        Opts.default()
+                                        Opts
+                                            .default()
                                             .withBlockAxis(dims[0].first)
                                             .withThreadBlock(dims[1].first, 32)
                                     } else if (dims.size > 1 && dims[0].second > 1) {
@@ -294,18 +300,21 @@ private class Context(
             if (b.realized()) {
                 val argId = ArgId.new()
                 perArgId[argId] = b
-                io.github.kotlinmania.ug.lang.op.load(argId, Layout.fromShape(shape), dtype)
+                io.github.kotlinmania.ug.lang.op
+                    .load(argId, Layout.fromShape(shape), dtype)
             } else {
                 when (val op = b.op) {
                     is Op.Unary -> {
                         val innerAst = walk(op.arg)
-                        io.github.kotlinmania.ug.lang.op.unary(op.op, innerAst)
+                        io.github.kotlinmania.ug.lang.op
+                            .unary(op.op, innerAst)
                     }
 
                     is Op.Binary -> {
                         val lhs = walk(op.lhs)
                         val rhs = walk(op.rhs)
-                        io.github.kotlinmania.ug.lang.op.binary(op.op, lhs, rhs)
+                        io.github.kotlinmania.ug.lang.op
+                            .binary(op.op, lhs, rhs)
                     }
 
                     is Op.MatMul -> {
@@ -322,30 +331,38 @@ private class Context(
                                 transpose = op.transpose,
                             ),
                         )
-                        io.github.kotlinmania.ug.lang.op.load(dstId, Layout.fromShape(shape), dtype)
+                        io.github.kotlinmania.ug.lang.op
+                            .load(dstId, Layout.fromShape(shape), dtype)
                     }
 
                     is Op.Reduce -> {
                         val innerAst = walk(op.arg)
-                        io.github.kotlinmania.ug.lang.op.reduce(op.op, innerAst, op.axis)
+                        io.github.kotlinmania.ug.lang.op
+                            .reduce(op.op, innerAst, op.axis)
                     }
 
-                    is Op.Const -> io.github.kotlinmania.ug.lang.op.cst(op.c)
+                    is Op.Const -> {
+                        io.github.kotlinmania.ug.lang.op
+                            .cst(op.c)
+                    }
 
                     is Op.Value -> {
                         val argId = ArgId.new()
                         perArgId[argId] = b
-                        io.github.kotlinmania.ug.lang.op.load(argId, Layout.fromShape(shape), dtype)
+                        io.github.kotlinmania.ug.lang.op
+                            .load(argId, Layout.fromShape(shape), dtype)
                     }
 
                     is Op.Reshape -> {
                         val dstId = pushScheduleItem(op.arg)
-                        io.github.kotlinmania.ug.lang.op.load(dstId, Layout.fromShape(shape), dtype)
+                        io.github.kotlinmania.ug.lang.op
+                            .load(dstId, Layout.fromShape(shape), dtype)
                     }
 
                     is Op.Layout -> {
                         val innerAst = walk(op.arg)
-                        io.github.kotlinmania.ug.lang.op.layout(op.op, innerAst, shape)
+                        io.github.kotlinmania.ug.lang.op
+                            .layout(op.op, innerAst, shape)
                     }
 
                     is Op.Ssa -> {
@@ -358,14 +375,16 @@ private class Context(
                         perArgId[dstId] = b
                         args.add(Pair(dstId, b))
                         items.add(ScheduleItem.Ssa(ssa = op.ssa, args = args))
-                        io.github.kotlinmania.ug.lang.op.load(dstId, Layout.fromShape(shape), dtype)
+                        io.github.kotlinmania.ug.lang.op
+                            .load(dstId, Layout.fromShape(shape), dtype)
                     }
 
                     is Op.Set -> {
                         val argId = pushScheduleItem(op.src)
                         val values = walk(op.values)
                         pushKernel(op.src, values, op.dstLayout)
-                        io.github.kotlinmania.ug.lang.op.load(argId, Layout.fromShape(shape), dtype)
+                        io.github.kotlinmania.ug.lang.op
+                            .load(argId, Layout.fromShape(shape), dtype)
                     }
 
                     is Op.CustomIp -> {
@@ -377,7 +396,8 @@ private class Context(
                         val argId = pushScheduleItem(op.src)
                         args.add(Pair(argId, op.src))
                         items.add(ScheduleItem.Custom(f = op.f, args = args))
-                        io.github.kotlinmania.ug.lang.op.load(argId, Layout.fromShape(shape), dtype)
+                        io.github.kotlinmania.ug.lang.op
+                            .load(argId, Layout.fromShape(shape), dtype)
                     }
 
                     is Op.Custom -> {
@@ -390,7 +410,8 @@ private class Context(
                         perArgId[dstId] = b
                         args.add(Pair(dstId, b))
                         items.add(ScheduleItem.Custom(f = op.f, args = args))
-                        io.github.kotlinmania.ug.lang.op.load(dstId, Layout.fromShape(shape), dtype)
+                        io.github.kotlinmania.ug.lang.op
+                            .load(dstId, Layout.fromShape(shape), dtype)
                     }
                 }
             }
@@ -398,7 +419,8 @@ private class Context(
         val finalAst =
             if ((idCnts[id] ?: 0) > 1) {
                 val dstId = pushKernel(b, ast, null)
-                io.github.kotlinmania.ug.lang.op.load(dstId, Layout.fromShape(shape), dtype)
+                io.github.kotlinmania.ug.lang.op
+                    .load(dstId, Layout.fromShape(shape), dtype)
             } else {
                 ast
             }
@@ -452,10 +474,23 @@ private fun idCnts(
 
     when (val op = b.op) {
         is Op.Value, is Op.Const -> {}
-        is Op.Reshape -> idCnts(op.arg, cnts)
-        is Op.Layout -> idCnts(op.arg, cnts)
-        is Op.Reduce -> idCnts(op.arg, cnts)
-        is Op.Unary -> idCnts(op.arg, cnts)
+
+        is Op.Reshape -> {
+            idCnts(op.arg, cnts)
+        }
+
+        is Op.Layout -> {
+            idCnts(op.arg, cnts)
+        }
+
+        is Op.Reduce -> {
+            idCnts(op.arg, cnts)
+        }
+
+        is Op.Unary -> {
+            idCnts(op.arg, cnts)
+        }
+
         is Op.Set -> {
             idCnts(op.src, cnts)
             idCnts(op.values, cnts)

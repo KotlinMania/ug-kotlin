@@ -114,18 +114,28 @@ public sealed class Const : Comparable<Const> {
         public fun minValue(dtype: DType): Const =
             when (dtype) {
                 DType.I32 -> I32(Int.MIN_VALUE)
+
                 DType.I64 -> I64(Long.MIN_VALUE)
+
                 DType.F32 -> F32(Float.NEGATIVE_INFINITY)
-                DType.F16 -> F16(0xfc00.toShort()) // -infinity
+
+                DType.F16 -> F16(0xfc00.toShort())
+
+                // -infinity
                 DType.BF16 -> BF16(0xff80.toShort()) // -infinity
             }
 
         public fun maxValue(dtype: DType): Const =
             when (dtype) {
                 DType.I32 -> I32(Int.MAX_VALUE)
+
                 DType.I64 -> I64(Long.MAX_VALUE)
+
                 DType.F32 -> F32(Float.POSITIVE_INFINITY)
-                DType.F16 -> F16(0x7c00.toShort()) // +infinity
+
+                DType.F16 -> F16(0x7c00.toShort())
+
+                // +infinity
                 DType.BF16 -> BF16(0x7f80.toShort()) // +infinity
             }
     }

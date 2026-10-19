@@ -138,8 +138,14 @@ public data class IndexExprNode(
 
     public fun asConst(): Int? =
         when (val e = expr) {
-            is IndexExpr.Constant -> e.value
-            is IndexExpr.ProgramId -> null
+            is IndexExpr.Constant -> {
+                e.value
+            }
+
+            is IndexExpr.ProgramId -> {
+                null
+            }
+
             is IndexExpr.Add -> {
                 val l = e.lhs.asConst()
                 val r = e.rhs.asConst()
@@ -209,13 +215,19 @@ public data class ExprNode(
 
     public fun allArgs(args: MutableSet<Arg>) {
         when (val e = expr) {
-            is Expr.Load -> args.add(e.slice.ptr)
+            is Expr.Load -> {
+                args.add(e.slice.ptr)
+            }
+
             is Expr.Binary -> {
                 e.lhs.allArgs(args)
                 e.rhs.allArgs(args)
             }
 
-            is Expr.Unary -> e.arg.allArgs(args)
+            is Expr.Unary -> {
+                e.arg.allArgs(args)
+            }
+
             is Expr.Range, is Expr.Constant -> {}
         }
     }

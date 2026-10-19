@@ -344,49 +344,69 @@ public fun evalSsa(
                 val arg = getA(instr.arg)
                 values[currentIdx] =
                     when (instr.op) {
-                        UnaryOp.Id -> arg
-                        UnaryOp.Neg ->
+                        UnaryOp.Id -> {
+                            arg
+                        }
+
+                        UnaryOp.Neg -> {
                             when (arg) {
                                 is Value.F32Val -> Value.F32Val(FloatArray(warpSize) { -arg.values[it] })
                                 is Value.I32Val -> Value.I32Val(IntArray(warpSize) { -arg.values[it] })
                                 else -> throw UgError.Msg("dtype mismatch for Neg $arg")
                             }
-                        UnaryOp.Exp ->
+                        }
+
+                        UnaryOp.Exp -> {
                             when (arg) {
                                 is Value.F32Val -> Value.F32Val(FloatArray(warpSize) { exp(arg.values[it]) })
                                 else -> throw UgError.Msg("dtype mismatch for Exp $arg")
                             }
-                        UnaryOp.Sqrt ->
+                        }
+
+                        UnaryOp.Sqrt -> {
                             when (arg) {
                                 is Value.F32Val -> Value.F32Val(FloatArray(warpSize) { sqrt(arg.values[it]) })
                                 else -> throw UgError.Msg("dtype mismatch for Sqrt $arg")
                             }
-                        UnaryOp.Sin ->
+                        }
+
+                        UnaryOp.Sin -> {
                             when (arg) {
                                 is Value.F32Val -> Value.F32Val(FloatArray(warpSize) { sin(arg.values[it]) })
                                 else -> throw UgError.Msg("dtype mismatch for Sin $arg")
                             }
-                        UnaryOp.Cos ->
+                        }
+
+                        UnaryOp.Cos -> {
                             when (arg) {
                                 is Value.F32Val -> Value.F32Val(FloatArray(warpSize) { cos(arg.values[it]) })
                                 else -> throw UgError.Msg("dtype mismatch for Cos $arg")
                             }
-                        is UnaryOp.Cast ->
+                        }
+
+                        is UnaryOp.Cast -> {
                             when (arg) {
-                                is Value.F32Val ->
+                                is Value.F32Val -> {
                                     when (instr.dtype) {
                                         DType.F32 -> Value.F32Val(arg.values.copyOf())
                                         DType.I32 -> Value.I32Val(IntArray(warpSize) { arg.values[it].toInt() })
                                         else -> throw UgError.Msg("dtype mismatch for Cast $arg to ${instr.dtype}")
                                     }
-                                is Value.I32Val ->
+                                }
+
+                                is Value.I32Val -> {
                                     when (instr.dtype) {
                                         DType.I32 -> Value.I32Val(arg.values.copyOf())
                                         DType.F32 -> Value.F32Val(FloatArray(warpSize) { arg.values[it].toFloat() })
                                         else -> throw UgError.Msg("dtype mismatch for Cast $arg to ${instr.dtype}")
                                     }
-                                else -> throw UgError.Msg("dtype mismatch for Cast $arg")
+                                }
+
+                                else -> {
+                                    throw UgError.Msg("dtype mismatch for Cast $arg")
+                                }
                             }
+                        }
                     }
             }
 

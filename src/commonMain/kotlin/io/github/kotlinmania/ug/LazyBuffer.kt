@@ -155,8 +155,8 @@ public class LazyBuffer(
     }
 
     @Suppress("UNCHECKED_CAST")
-    public inline fun <reified T : Any> dataVec(): List<T> {
-        return when (T::class) {
+    public inline fun <reified T : Any> dataVec(): List<T> =
+        when (T::class) {
             Float::class -> dataVec(WithDType.F32) as List<T>
             Int::class -> dataVec(WithDType.I32) as List<T>
             Long::class -> dataVec(WithDType.I64) as List<T>
@@ -164,7 +164,6 @@ public class LazyBuffer(
             BF16::class -> dataVec(WithDType.BF16) as List<T>
             else -> throw UgError.Msg("unsupported dtype for dataVec")
         }
-    }
 
     public fun elemCount(): Int = inner.shape.numElements()
 
@@ -268,7 +267,9 @@ public class LazyBuffer(
         if (dtype != values.dtype) {
             ugBail("dtype mismatch in set, $dtype vs ${values.dtype}")
         }
-        val dstLayout = io.github.kotlinmania.ug.Layout.fromShape(shape)
+        val dstLayout =
+            io.github.kotlinmania.ug.Layout
+                .fromShape(shape)
         val inner =
             LazyBufferInner(
                 id = LazyBufferId.new(),
@@ -754,7 +755,10 @@ public class LazyBuffer(
             var offset = 0
             var vs = allocUninit(arg0.dtype, Shape(dimsList), arg0.device)
             for (arg in args) {
-                val dstLayout = io.github.kotlinmania.ug.Layout.fromShape(arg.shape).setOffset(offset * stride)
+                val dstLayout =
+                    io.github.kotlinmania.ug.Layout
+                        .fromShape(arg.shape)
+                        .setOffset(offset * stride)
                 vs = vs.setL(arg, dstLayout)
                 offset += arg.dims()[d]
             }

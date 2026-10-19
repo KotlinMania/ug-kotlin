@@ -1,9 +1,9 @@
 // port-lint: source dtype.rs
 package io.github.kotlinmania.ug
 
+import io.github.kotlinmania.ug.cpuruntime.CpuStorage
 import io.github.kotlinmania.half.BF16 as HalfBF16
 import io.github.kotlinmania.half.F16 as HalfF16
-import io.github.kotlinmania.ug.cpuruntime.CpuStorage
 
 public interface WithDType<T> {
     public val dtype: DType

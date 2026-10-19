@@ -45,12 +45,14 @@ class DisplayTests {
 
         val t3 = LazyBuffer.cst(42.0f, Shape(50), dev)
         val s3 = "\n" + t3.toString()
-        val expected = """
+        val expected =
+            """
 [42., 42., 42., 42., 42., 42., 42., 42., 42., 42., 42., 42., 42., 42., 42., 42.,
  42., 42., 42., 42., 42., 42., 42., 42., 42., 42., 42., 42., 42., 42., 42., 42.,
  42., 42., 42., 42., 42., 42., 42., 42., 42., 42., 42., 42., 42., 42., 42., 42.,
  42., 42.]
-Tensor[[50], f32]""".trimIndent()
+Tensor[[50], f32]
+            """.trimIndent()
         assertEquals("\n" + expected, s3)
 
         val t4 = LazyBuffer.cst(42.0f, Shape(11000), dev)
@@ -62,7 +64,8 @@ Tensor[[50], f32]""".trimIndent()
     fun displayMultiDim() {
         val t = LazyBuffer.cst(42.0f, Shape(200, 100), CpuDevice)
         val s = "\n" + t.toString()
-        val expected = """
+        val expected =
+            """
 [[42., 42., 42., ..., 42., 42., 42.],
  [42., 42., 42., ..., 42., 42., 42.],
  [42., 42., 42., ..., 42., 42., 42.],
@@ -70,12 +73,14 @@ Tensor[[50], f32]""".trimIndent()
  [42., 42., 42., ..., 42., 42., 42.],
  [42., 42., 42., ..., 42., 42., 42.],
  [42., 42., 42., ..., 42., 42., 42.]]
-Tensor[[200, 100], f32]""".trimIndent()
+Tensor[[200, 100], f32]
+            """.trimIndent()
         assertEquals("\n" + expected, s)
 
         val tReshaped = t.reshape(Shape(2, 1, 1, 100, 100))
         val sReshaped = "\n" + tReshaped.toString()
-        val expectedReshaped = """
+        val expectedReshaped =
+            """
 [[[[[42., 42., 42., ..., 42., 42., 42.],
     [42., 42., 42., ..., 42., 42., 42.],
     [42., 42., 42., ..., 42., 42., 42.],
@@ -90,7 +95,8 @@ Tensor[[200, 100], f32]""".trimIndent()
     [42., 42., 42., ..., 42., 42., 42.],
     [42., 42., 42., ..., 42., 42., 42.],
     [42., 42., 42., ..., 42., 42., 42.]]]]]
-Tensor[[2, 1, 1, 100, 100], f32]""".trimIndent()
+Tensor[[2, 1, 1, 100, 100], f32]
+            """.trimIndent()
         assertEquals("\n" + expectedReshaped, sReshaped)
     }
 }

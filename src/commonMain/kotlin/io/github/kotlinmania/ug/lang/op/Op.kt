@@ -85,21 +85,32 @@ public data class Ast(
     public val dtype: DType,
     public val shape: Shape,
 ) : Comparable<Ast> {
-
     public fun argIds(): Set<ArgId> {
         val ids = mutableSetOf<ArgId>()
 
         fun visit(ast: Ast) {
             when (val in_ = ast.inner) {
-                is AstInner.LayoutOperation -> visit(in_.arg)
-                is AstInner.Reduce -> visit(in_.arg)
-                is AstInner.Unary -> visit(in_.arg)
+                is AstInner.LayoutOperation -> {
+                    visit(in_.arg)
+                }
+
+                is AstInner.Reduce -> {
+                    visit(in_.arg)
+                }
+
+                is AstInner.Unary -> {
+                    visit(in_.arg)
+                }
+
                 is AstInner.Binary -> {
                     visit(in_.lhs)
                     visit(in_.rhs)
                 }
 
-                is AstInner.Load -> ids.add(in_.src)
+                is AstInner.Load -> {
+                    ids.add(in_.src)
+                }
+
                 is AstInner.Id, is AstInner.Constant -> {}
             }
         }
@@ -123,6 +134,7 @@ public data class Store(
 
     public fun name(): String {
         val chars = StringBuilder()
+
         fun walk(ast: Ast) {
             when (ast.inner) {
                 is AstInner.Unary -> {
@@ -136,7 +148,10 @@ public data class Store(
                     walk(ast.inner.rhs)
                 }
 
-                is AstInner.Load -> chars.append('L')
+                is AstInner.Load -> {
+                    chars.append('L')
+                }
+
                 is AstInner.Reduce -> {
                     chars.append('R')
                     walk(ast.inner.arg)
@@ -147,8 +162,13 @@ public data class Store(
                     walk(ast.inner.arg)
                 }
 
-                is AstInner.Constant -> chars.append('C')
-                is AstInner.Id -> chars.append('I')
+                is AstInner.Constant -> {
+                    chars.append('C')
+                }
+
+                is AstInner.Id -> {
+                    chars.append('I')
+                }
             }
         }
         walk(value)
@@ -158,17 +178,32 @@ public data class Store(
     public fun canMergeAll(): Boolean {
         fun walk(ast: Ast): Boolean =
             when (val in_ = ast.inner) {
-                is AstInner.Unary -> walk(in_.arg)
-                is AstInner.Binary -> walk(in_.lhs) && walk(in_.rhs)
-                is AstInner.Load -> in_.layout.canBeCompressed()
-                is AstInner.Reduce -> false
-                is AstInner.LayoutOperation ->
+                is AstInner.Unary -> {
+                    walk(in_.arg)
+                }
+
+                is AstInner.Binary -> {
+                    walk(in_.lhs) && walk(in_.rhs)
+                }
+
+                is AstInner.Load -> {
+                    in_.layout.canBeCompressed()
+                }
+
+                is AstInner.Reduce -> {
+                    false
+                }
+
+                is AstInner.LayoutOperation -> {
                     when (val op = in_.op) {
                         is LayoutOp.Narrow, is LayoutOp.SplitDim, is LayoutOp.MergeDims, is LayoutOp.Transpose -> false
                         is LayoutOp.Broadcast -> op.broadcastedDims.size >= ast.shape.rank()
                     }
+                }
 
-                is AstInner.Constant, is AstInner.Id -> true
+                is AstInner.Constant, is AstInner.Id -> {
+                    true
+                }
             }
 
         if (!layout.canBeCompressed()) return false
@@ -195,19 +230,30 @@ public data class Kernel(
                     binary(in_.op, lhs, rhs)
                 }
 
-                is AstInner.Load -> load(in_.src, in_.layout.compressAll(), v.dtype)
-                is AstInner.Reduce -> throw UgError.Msg("unexpected result in optimize step")
-                is AstInner.LayoutOperation ->
+                is AstInner.Load -> {
+                    load(in_.src, in_.layout.compressAll(), v.dtype)
+                }
+
+                is AstInner.Reduce -> {
+                    throw UgError.Msg("unexpected result in optimize step")
+                }
+
+                is AstInner.LayoutOperation -> {
                     when (in_.op) {
                         is LayoutOp.Broadcast -> {
                             val arg = walk(in_.arg)
                             broadcast(arg, Shape.from(v.shape.numElements()))
                         }
 
-                        else -> throw UgError.Msg("unexpected layout op ${in_.op}")
+                        else -> {
+                            throw UgError.Msg("unexpected layout op ${in_.op}")
+                        }
                     }
+                }
 
-                is AstInner.Constant, is AstInner.Id -> v
+                is AstInner.Constant, is AstInner.Id -> {
+                    v
+                }
             }
 
         val newOps =
@@ -221,8 +267,13 @@ public data class Kernel(
         return Kernel(name, args, newOps)
     }
 
-    public fun lower(opts: io.github.kotlinmania.ug.lowerop.Opts = io.github.kotlinmania.ug.lowerop.Opts()): io.github.kotlinmania.ug.lang.ssa.Kernel =
-        io.github.kotlinmania.ug.lowerop.lowerKernel(this, opts)
+    public fun lower(
+        opts: io.github.kotlinmania.ug.lowerop.Opts =
+            io.github.kotlinmania.ug.lowerop
+                .Opts(),
+    ): io.github.kotlinmania.ug.lang.ssa.Kernel =
+        io.github.kotlinmania.ug.lowerop
+            .lowerKernel(this, opts)
 
     public companion object {
         public fun new(name: String, args: List<Arg>, ops: List<Store>): Kernel = Kernel(name, args, ops)

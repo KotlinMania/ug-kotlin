@@ -90,8 +90,14 @@ internal sealed class IndexFormula {
 
     fun eval(block: Block): Id =
         when (this) {
-            is IdFormula -> id
-            is Constant -> block.cst(value)
+            is IdFormula -> {
+                id
+            }
+
+            is Constant -> {
+                block.cst(value)
+            }
+
             is Add -> {
                 val l = lhs.eval(block)
                 val r = rhs.eval(block)
@@ -242,8 +248,14 @@ internal fun Ast.lower(
                 block.push(Instr.Load(src = ptrI, offset = offI.toA(), dtype = dtype))
             }
 
-            is AstInner.Constant -> block.cst(in_.value)
-            is AstInner.Id -> throw UgError.Msg("unexpected id node in Ast")
+            is AstInner.Constant -> {
+                block.cst(in_.value)
+            }
+
+            is AstInner.Id -> {
+                throw UgError.Msg("unexpected id node in Ast")
+            }
+
             is AstInner.Unary -> {
                 val (argId, argB) = in_.arg.lower(idxs, opts, perArg)
                 block.instrs.addAll(argB.instrs)
@@ -388,10 +400,16 @@ public fun lowerKernel(
     val gridDim =
         opts.blockAxis?.let { idx ->
             val local = if (opts.threadBlock?.dim == idx) opts.threadBlock.blockDim else 1
-            val dimLen = kernel.ops.firstOrNull()?.layout?.dims?.getOrNull(idx) ?: 1
+            val dimLen =
+                kernel.ops
+                    .firstOrNull()
+                    ?.layout
+                    ?.dims
+                    ?.getOrNull(idx) ?: 1
             (dimLen + local - 1) / local
         } ?: 1
     val blockDim = opts.threadBlock?.blockDim ?: 1
     val cfg = LaunchConfig(gridDim = gridDim, blockDim = blockDim, sharedMem = 0)
-    return io.github.kotlinmania.ug.lang.ssa.Kernel(instrs, ssaArgs, cfg)
+    return io.github.kotlinmania.ug.lang.ssa
+        .Kernel(instrs, ssaArgs, cfg)
 }

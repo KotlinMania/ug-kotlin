@@ -101,12 +101,11 @@ public sealed class UgError(
 
 public fun ugBail(message: String): Nothing = throw UgError.Msg(message)
 
-public fun <T, U> zip(r1: Result<T>, r2: Result<U>): Result<Pair<T, U>> {
-    return if (r1.isSuccess && r2.isSuccess) {
+public fun <T, U> zip(r1: Result<T>, r2: Result<U>): Result<Pair<T, U>> =
+    if (r1.isSuccess && r2.isSuccess) {
         Result.success(Pair(r1.getOrThrow(), r2.getOrThrow()))
     } else if (r1.isFailure) {
         Result.failure(r1.exceptionOrNull()!!)
     } else {
         Result.failure(r2.exceptionOrNull()!!)
     }
-}

@@ -160,8 +160,14 @@ public data class Kernel(
         var mult = 1
         for (instr in instrs) {
             when (instr) {
-                is Instr.Load -> mem += mult * instr.dtype.sizeInBytes
-                is Instr.Store -> mem += mult * instr.dtype.sizeInBytes
+                is Instr.Load -> {
+                    mem += mult * instr.dtype.sizeInBytes
+                }
+
+                is Instr.Store -> {
+                    mem += mult * instr.dtype.sizeInBytes
+                }
+
                 is Instr.Range -> {
                     mults.add(mult)
                     val loVal: Long =
@@ -184,7 +190,9 @@ public data class Kernel(
                                         }
                                     }
 
-                                    else -> throw UgError.Msg("range lo is not a const")
+                                    else -> {
+                                        throw UgError.Msg("range lo is not a const")
+                                    }
                                 }
                             }
                         }
@@ -208,7 +216,9 @@ public data class Kernel(
                                         }
                                     }
 
-                                    else -> throw UgError.Msg("range up is not a const")
+                                    else -> {
+                                        throw UgError.Msg("range up is not a const")
+                                    }
                                 }
                             }
                         }
@@ -221,7 +231,10 @@ public data class Kernel(
                     mult = mults.removeAt(mults.size - 1)
                 }
 
-                is Instr.Unary, is Instr.Binary -> flops += mult
+                is Instr.Unary, is Instr.Binary -> {
+                    flops += mult
+                }
+
                 else -> {}
             }
         }
@@ -231,7 +244,11 @@ public data class Kernel(
     override fun toString(): String {
         val sb = StringBuilder()
         for ((varId, instr) in instrs.withIndex()) {
-            sb.append(varId.toString().padStart(3, '0')).append(' ').append(instr).append('\n')
+            sb
+                .append(varId.toString().padStart(3, '0'))
+                .append(' ')
+                .append(instr)
+                .append('\n')
         }
         return sb.toString()
     }

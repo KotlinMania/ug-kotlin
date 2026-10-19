@@ -66,7 +66,13 @@ public fun gen(w: Appendable, funcName: String, kernel: Kernel) {
                 is UgType.Value -> formatD(t.dtype)
                 is UgType.Ptr -> "${formatD(t.dtype)}*"
             }
-        w.append("  ").append(tyStr).append(' ').append(formatV(VarId.new(kernelArg.index))).append(delim).append('\n')
+        w
+            .append("  ")
+            .append(tyStr)
+            .append(' ')
+            .append(formatV(VarId.new(kernelArg.index)))
+            .append(delim)
+            .append('\n')
     }
     w.append(") {\n")
 
@@ -76,31 +82,66 @@ public fun gen(w: Appendable, funcName: String, kernel: Kernel) {
         val indent = " ".repeat(2 * depth + 2)
         when (instr) {
             is Instr.DefineGlobal -> {}
+
             is Instr.DefineLocal -> {
-                w.append(indent).append("__shared__ ").append(formatD(instr.dtype)).append(' ').append(varId)
-                    .append('[').append(instr.size.toString()).append("];\n")
+                w
+                    .append(indent)
+                    .append("__shared__ ")
+                    .append(formatD(instr.dtype))
+                    .append(' ')
+                    .append(varId)
+                    .append('[')
+                    .append(instr.size.toString())
+                    .append("];\n")
             }
 
             is Instr.DefineAcc -> {
-                w.append(indent).append(formatD(instr.value.dtype)).append(' ').append(varId)
-                    .append(" = ").append(formatC(instr.value)).append(";\n")
+                w
+                    .append(indent)
+                    .append(formatD(instr.value.dtype))
+                    .append(' ')
+                    .append(varId)
+                    .append(" = ")
+                    .append(formatC(instr.value))
+                    .append(";\n")
             }
 
             is Instr.Constant -> {
-                w.append(indent).append(formatD(instr.value.dtype)).append(' ').append(varId)
-                    .append(" = ").append(formatC(instr.value)).append(";\n")
+                w
+                    .append(indent)
+                    .append(formatD(instr.value.dtype))
+                    .append(' ')
+                    .append(varId)
+                    .append(" = ")
+                    .append(formatC(instr.value))
+                    .append(";\n")
             }
 
             is Instr.If -> {
-                w.append(indent).append("if (").append(formatA(instr.cond)).append(") {\n")
+                w
+                    .append(indent)
+                    .append("if (")
+                    .append(formatA(instr.cond))
+                    .append(") {\n")
                 depth += 1
             }
 
             is Instr.Range -> {
-                w.append(indent).append("for (int ").append(varId).append(" = ")
-                    .append(formatA(instr.lo)).append("; ").append(varId).append(" < ")
-                    .append(formatA(instr.up)).append("; ").append(varId).append("+=")
-                    .append(instr.step.toString()).append(") {\n")
+                w
+                    .append(indent)
+                    .append("for (int ")
+                    .append(varId)
+                    .append(" = ")
+                    .append(formatA(instr.lo))
+                    .append("; ")
+                    .append(varId)
+                    .append(" < ")
+                    .append(formatA(instr.up))
+                    .append("; ")
+                    .append(varId)
+                    .append("+=")
+                    .append(instr.step.toString())
+                    .append(") {\n")
                 depth += 1
             }
 
@@ -112,17 +153,36 @@ public fun gen(w: Appendable, funcName: String, kernel: Kernel) {
             }
 
             is Instr.Load -> {
-                w.append(indent).append(formatD(instr.dtype)).append(' ').append(varId)
-                    .append(" = ").append(formatV(instr.src)).append('[').append(formatA(instr.offset)).append("];\n")
+                w
+                    .append(indent)
+                    .append(formatD(instr.dtype))
+                    .append(' ')
+                    .append(varId)
+                    .append(" = ")
+                    .append(formatV(instr.src))
+                    .append('[')
+                    .append(formatA(instr.offset))
+                    .append("];\n")
             }
 
             is Instr.Assign -> {
-                w.append(indent).append(formatV(instr.dst)).append(" = ").append(formatA(instr.src)).append(";\n")
+                w
+                    .append(indent)
+                    .append(formatV(instr.dst))
+                    .append(" = ")
+                    .append(formatA(instr.src))
+                    .append(";\n")
             }
 
             is Instr.Store -> {
-                w.append(indent).append(formatV(instr.dst)).append('[').append(formatA(instr.offset))
-                    .append("] = ").append(formatA(instr.value)).append(";\n")
+                w
+                    .append(indent)
+                    .append(formatV(instr.dst))
+                    .append('[')
+                    .append(formatA(instr.offset))
+                    .append("] = ")
+                    .append(formatA(instr.value))
+                    .append(";\n")
             }
 
             is Instr.Binary -> {
@@ -136,8 +196,14 @@ public fun gen(w: Appendable, funcName: String, kernel: Kernel) {
                         BinaryOp.Max -> "fmax(${formatA(instr.lhs)}, ${formatA(instr.rhs)})"
                         BinaryOp.Mod -> "${formatA(instr.lhs)} % ${formatA(instr.rhs)}"
                     }
-                w.append(indent).append(formatD(instr.dtype)).append(' ').append(varId)
-                    .append(" = ").append(opStr).append(";\n")
+                w
+                    .append(indent)
+                    .append(formatD(instr.dtype))
+                    .append(' ')
+                    .append(varId)
+                    .append(" = ")
+                    .append(opStr)
+                    .append(";\n")
             }
 
             is Instr.Unary -> {
@@ -151,8 +217,16 @@ public fun gen(w: Appendable, funcName: String, kernel: Kernel) {
                         UnaryOp.Id -> ""
                         is UnaryOp.Cast -> "(${formatD(op.dtype)})"
                     }
-                w.append(indent).append(formatD(instr.dtype)).append(' ').append(varId)
-                    .append(" = ").append(opStr).append('(').append(formatA(instr.arg)).append(");\n")
+                w
+                    .append(indent)
+                    .append(formatD(instr.dtype))
+                    .append(' ')
+                    .append(varId)
+                    .append(" = ")
+                    .append(opStr)
+                    .append('(')
+                    .append(formatA(instr.arg))
+                    .append(");\n")
             }
 
             is Instr.SpecialInstr -> {
@@ -171,8 +245,16 @@ public fun gen(w: Appendable, funcName: String, kernel: Kernel) {
                         ReduceOp.Min -> "block_reduce_min"
                         ReduceOp.Max -> "block_reduce_max"
                     }
-                w.append(indent).append(formatD(instr.dtype)).append(' ').append(varId)
-                    .append(" = ").append(opStr).append('(').append(formatA(instr.arg)).append(");\n")
+                w
+                    .append(indent)
+                    .append(formatD(instr.dtype))
+                    .append(' ')
+                    .append(varId)
+                    .append(" = ")
+                    .append(opStr)
+                    .append('(')
+                    .append(formatA(instr.arg))
+                    .append(");\n")
             }
         }
     }

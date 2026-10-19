@@ -248,17 +248,39 @@ public object Samples {
     public object op {
         public fun softmax(dim1: Int, dim2: Int): io.github.kotlinmania.ug.lang.op.Kernel {
             val layout = Layout.fromShape(Shape(dim1, dim2))
-            val srcPtr = io.github.kotlinmania.ug.lang.Arg.ptr(DType.F32)
-            val dstPtr = io.github.kotlinmania.ug.lang.Arg.ptr(DType.F32)
-            val src = io.github.kotlinmania.ug.lang.op.load(srcPtr.id, layout, DType.F32)
-            val srcMax = io.github.kotlinmania.ug.lang.op.reduce(ReduceOp.Max, src, 1)
-            val srcMaxBc = io.github.kotlinmania.ug.lang.op.broadcast(srcMax, Shape(dim1, dim2))
-            val diff = io.github.kotlinmania.ug.lang.op.binary(BinaryOp.Sub, src, srcMaxBc)
-            val exp = io.github.kotlinmania.ug.lang.op.unary(UnaryOp.Exp, diff)
-            val sumExp = io.github.kotlinmania.ug.lang.op.reduce(ReduceOp.Sum, exp, 1)
-            val sumExpBc = io.github.kotlinmania.ug.lang.op.broadcast(sumExp, Shape(dim1, dim2))
-            val sm = io.github.kotlinmania.ug.lang.op.binary(BinaryOp.Div, exp, sumExpBc)
-            val st = io.github.kotlinmania.ug.lang.op.store(dstPtr.id, layout, sm)
+            val srcPtr =
+                io.github.kotlinmania.ug.lang.Arg
+                    .ptr(DType.F32)
+            val dstPtr =
+                io.github.kotlinmania.ug.lang.Arg
+                    .ptr(DType.F32)
+            val src =
+                io.github.kotlinmania.ug.lang.op
+                    .load(srcPtr.id, layout, DType.F32)
+            val srcMax =
+                io.github.kotlinmania.ug.lang.op
+                    .reduce(ReduceOp.Max, src, 1)
+            val srcMaxBc =
+                io.github.kotlinmania.ug.lang.op
+                    .broadcast(srcMax, Shape(dim1, dim2))
+            val diff =
+                io.github.kotlinmania.ug.lang.op
+                    .binary(BinaryOp.Sub, src, srcMaxBc)
+            val exp =
+                io.github.kotlinmania.ug.lang.op
+                    .unary(UnaryOp.Exp, diff)
+            val sumExp =
+                io.github.kotlinmania.ug.lang.op
+                    .reduce(ReduceOp.Sum, exp, 1)
+            val sumExpBc =
+                io.github.kotlinmania.ug.lang.op
+                    .broadcast(sumExp, Shape(dim1, dim2))
+            val sm =
+                io.github.kotlinmania.ug.lang.op
+                    .binary(BinaryOp.Div, exp, sumExpBc)
+            val st =
+                io.github.kotlinmania.ug.lang.op
+                    .store(dstPtr.id, layout, sm)
             return io.github.kotlinmania.ug.lang.op.Kernel(
                 name = "softmax_${dim1}_$dim2",
                 args = listOf(srcPtr, dstPtr),
@@ -268,18 +290,41 @@ public object Samples {
     }
 
     public fun simpleAdd(blockSize: Int): io.github.kotlinmania.ug.lang.Kernel {
-        val lhsPtr = io.github.kotlinmania.ug.lang.Arg.ptr(DType.F32)
-        val rhsPtr = io.github.kotlinmania.ug.lang.Arg.ptr(DType.F32)
-        val dstPtr = io.github.kotlinmania.ug.lang.Arg.ptr(DType.F32)
-        val offset = io.github.kotlinmania.ug.lang.IndexExprNode.programId().mul(io.github.kotlinmania.ug.lang.IndexExprNode.cst(blockSize))
-        val stride = io.github.kotlinmania.ug.lang.IndexExprNode.cst(1)
-        val len = io.github.kotlinmania.ug.lang.IndexExprNode.cst(blockSize)
-        val lhs = io.github.kotlinmania.ug.lang.ExprNode.load(lhsPtr, offset, len, stride)
-        val rhs = io.github.kotlinmania.ug.lang.ExprNode.load(rhsPtr, offset, len, stride)
-        val op = io.github.kotlinmania.ug.lang.Ops.Store(
-            dst = io.github.kotlinmania.ug.lang.StridedSlice(dstPtr, offset, len, stride),
-            src = lhs.add(rhs),
-        )
+        val lhsPtr =
+            io.github.kotlinmania.ug.lang.Arg
+                .ptr(DType.F32)
+        val rhsPtr =
+            io.github.kotlinmania.ug.lang.Arg
+                .ptr(DType.F32)
+        val dstPtr =
+            io.github.kotlinmania.ug.lang.Arg
+                .ptr(DType.F32)
+        val offset =
+            io.github.kotlinmania.ug.lang.IndexExprNode
+                .programId()
+                .mul(
+                    io.github.kotlinmania.ug.lang.IndexExprNode
+                        .cst(blockSize),
+                )
+        val stride =
+            io.github.kotlinmania.ug.lang.IndexExprNode
+                .cst(1)
+        val len =
+            io.github.kotlinmania.ug.lang.IndexExprNode
+                .cst(blockSize)
+        val lhs =
+            io.github.kotlinmania.ug.lang.ExprNode
+                .load(lhsPtr, offset, len, stride)
+        val rhs =
+            io.github.kotlinmania.ug.lang.ExprNode
+                .load(rhsPtr, offset, len, stride)
+        val op =
+            io.github.kotlinmania.ug.lang.Ops.Store(
+                dst =
+                    io.github.kotlinmania.ug.lang
+                        .StridedSlice(dstPtr, offset, len, stride),
+                src = lhs.add(rhs),
+            )
         return io.github.kotlinmania.ug.lang.Kernel(
             name = "simple_add_$blockSize",
             args = listOf(lhsPtr, rhsPtr, dstPtr),

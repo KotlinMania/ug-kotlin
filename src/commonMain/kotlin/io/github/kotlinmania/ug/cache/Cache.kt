@@ -24,7 +24,10 @@ public data class NormalizedKernel(
         public fun new(k: Kernel): NormalizedKernel {
             fun walk(ast: Ast, argMap: Map<ArgId, ArgId>): Ast =
                 when (val in_ = ast.inner) {
-                    is AstInner.Id -> throw UgError.Msg("unexpected id node")
+                    is AstInner.Id -> {
+                        throw UgError.Msg("unexpected id node")
+                    }
+
                     is AstInner.Load -> {
                         val src = argMap[in_.src] ?: throw UgError.Msg("BUG: missing arg id ${in_.src}")
                         load(src, in_.layout, ast.dtype)
@@ -41,7 +44,10 @@ public data class NormalizedKernel(
                         binary(in_.op, lhs, rhs)
                     }
 
-                    is AstInner.Constant -> cst(in_.value)
+                    is AstInner.Constant -> {
+                        cst(in_.value)
+                    }
+
                     is AstInner.Reduce -> {
                         val arg = walk(in_.arg, argMap)
                         reduce(in_.op, arg, in_.dim)

@@ -136,8 +136,14 @@ internal fun lowerExprNode(
                 srcB
             }
 
-            is Expr.Constant -> Block(mutableListOf(Pair(dstId, Instr.Constant(e.c))))
-            is Expr.Range -> throw UgError.Msg("range is not supported yet")
+            is Expr.Constant -> {
+                Block(mutableListOf(Pair(dstId, Instr.Constant(e.c))))
+            }
+
+            is Expr.Range -> {
+                throw UgError.Msg("range is not supported yet")
+            }
+
             is Expr.Unary -> {
                 val (argId, argB) = lowerExprNode(e.arg, rangeId, perArg)
                 val instr = Instr.Unary(op = e.op, arg = argId.toA(), dtype = dtype)
@@ -206,7 +212,8 @@ public fun lowerKernel(kernel: Kernel): io.github.kotlinmania.ug.lang.ssa.Kernel
 
     val block = Block(instrs)
     val relocated = block.relocate()
-    return io.github.kotlinmania.ug.lang.ssa.Kernel.fromInstrs(relocated)
+    return io.github.kotlinmania.ug.lang.ssa.Kernel
+        .fromInstrs(relocated)
 }
 
 public fun Kernel.lower(): io.github.kotlinmania.ug.lang.ssa.Kernel = lowerKernel(this)

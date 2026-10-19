@@ -123,12 +123,34 @@ class BasicTests {
     @Test
     fun affine() {
         val layout = Layout.fromShape(4)
-        val ptr = io.github.kotlinmania.ug.lang.Arg.ptr(DType.F32)
-        val src = io.github.kotlinmania.ug.lang.op.load(ptr.id, layout, DType.F32)
-        val sub = io.github.kotlinmania.ug.lang.op.broadcastBinary(io.github.kotlinmania.ug.lang.BinaryOp.Sub, src, io.github.kotlinmania.ug.lang.op.cst(0.5f))
-        val mul = io.github.kotlinmania.ug.lang.op.broadcastBinary(io.github.kotlinmania.ug.lang.BinaryOp.Mul, sub, io.github.kotlinmania.ug.lang.op.cst(3.0f))
-        val st = io.github.kotlinmania.ug.lang.op.store(ptr.id, layout, mul)
-        val kernel = io.github.kotlinmania.ug.lang.op.Kernel("affine", listOf(ptr), listOf(st))
+        val ptr =
+            io.github.kotlinmania.ug.lang.Arg
+                .ptr(DType.F32)
+        val src =
+            io.github.kotlinmania.ug.lang.op
+                .load(ptr.id, layout, DType.F32)
+        val sub =
+            io.github.kotlinmania.ug.lang.op
+                .broadcastBinary(
+                    io.github.kotlinmania.ug.lang.BinaryOp.Sub,
+                    src,
+                    io.github.kotlinmania.ug.lang.op
+                        .cst(0.5f),
+                )
+        val mul =
+            io.github.kotlinmania.ug.lang.op
+                .broadcastBinary(
+                    io.github.kotlinmania.ug.lang.BinaryOp.Mul,
+                    sub,
+                    io.github.kotlinmania.ug.lang.op
+                        .cst(3.0f),
+                )
+        val st =
+            io.github.kotlinmania.ug.lang.op
+                .store(ptr.id, layout, mul)
+        val kernel =
+            io.github.kotlinmania.ug.lang.op
+                .Kernel("affine", listOf(ptr), listOf(st))
         val ssaKernel = kernel.lower()
         val a = Buffer.F32(floatArrayOf(1f, 2f, 3f, 4f))
         evalSsa(ssaKernel, listOf(a), emptyList(), 0, warpSize = 4)

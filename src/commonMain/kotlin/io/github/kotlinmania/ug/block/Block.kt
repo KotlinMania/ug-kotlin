@@ -138,78 +138,104 @@ internal class Block(
 
             val relocated =
                 when (instr) {
-                    is Instr.Store ->
+                    is Instr.Store -> {
                         Instr.Store(
                             dst = getId(instr.dst),
                             offset = getA(instr.offset),
                             value = getA(instr.value),
                             dtype = instr.dtype,
                         )
+                    }
 
-                    is Instr.If ->
+                    is Instr.If -> {
                         Instr.If(
                             cond = getA(instr.cond),
                             endIdx = getId(instr.endIdx),
                         )
+                    }
 
-                    is Instr.Range ->
+                    is Instr.Range -> {
                         Instr.Range(
                             lo = getA(instr.lo),
                             up = getA(instr.up),
                             step = instr.step,
                             endIdx = getId(instr.endIdx),
                         )
+                    }
 
-                    is Instr.Load ->
+                    is Instr.Load -> {
                         Instr.Load(
                             src = getId(instr.src),
                             offset = getA(instr.offset),
                             dtype = instr.dtype,
                         )
+                    }
 
-                    is Instr.Constant -> instr
+                    is Instr.Constant -> {
+                        instr
+                    }
 
-                    is Instr.Binary ->
+                    is Instr.Binary -> {
                         Instr.Binary(
                             op = instr.op,
                             lhs = getA(instr.lhs),
                             rhs = getA(instr.rhs),
                             dtype = instr.dtype,
                         )
+                    }
 
-                    is Instr.Unary ->
+                    is Instr.Unary -> {
                         Instr.Unary(
                             op = instr.op,
                             arg = getA(instr.arg),
                             dtype = instr.dtype,
                         )
+                    }
 
-                    is Instr.DefineAcc -> instr
+                    is Instr.DefineAcc -> {
+                        instr
+                    }
 
-                    is Instr.Assign ->
+                    is Instr.Assign -> {
                         Instr.Assign(
                             dst = getId(instr.dst),
                             src = getA(instr.src),
                         )
+                    }
 
-                    is Instr.SpecialInstr -> instr
-                    is Instr.DefineLocal -> instr
-                    is Instr.DefineGlobal -> instr
-                    is Instr.Barrier -> instr
+                    is Instr.SpecialInstr -> {
+                        instr
+                    }
 
-                    is Instr.ReduceLocal ->
+                    is Instr.DefineLocal -> {
+                        instr
+                    }
+
+                    is Instr.DefineGlobal -> {
+                        instr
+                    }
+
+                    is Instr.Barrier -> {
+                        instr
+                    }
+
+                    is Instr.ReduceLocal -> {
                         Instr.ReduceLocal(
                             op = instr.op,
                             arg = getA(instr.arg),
                             dtype = instr.dtype,
                         )
+                    }
 
-                    is Instr.EndIf -> instr
+                    is Instr.EndIf -> {
+                        instr
+                    }
 
-                    is Instr.EndRange ->
+                    is Instr.EndRange -> {
                         Instr.EndRange(
                             startIdx = getId(instr.startIdx),
                         )
+                    }
                 }
             result.add(relocated)
         }
