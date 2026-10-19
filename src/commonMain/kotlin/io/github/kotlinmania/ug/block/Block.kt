@@ -10,39 +10,39 @@ import io.github.kotlinmania.ug.lang.ssa.A
 import io.github.kotlinmania.ug.lang.ssa.Instr
 import io.github.kotlinmania.ug.lang.ssa.VarId
 
-public data class Id(
-    public val id: Int,
+internal data class Id(
+    val id: Int,
 ) : Comparable<Id> {
-    public fun toVarId(): VarId = VarId(id)
+    fun toVarId(): VarId = VarId(id)
 
-    public fun toA(): A = A.Var(VarId(id))
+    fun toA(): A = A.Var(VarId(id))
 
     override fun compareTo(other: Id): Int = id.compareTo(other.id)
 
-    public companion object {
+    companion object {
         private var counter: Int = 1
 
-        public fun new(): Id {
+        fun new(): Id {
             val v = counter
             counter += 1
             return Id(v)
         }
 
-        public fun fromVarId(v: VarId): Id = Id(v.id)
+        fun fromVarId(v: VarId): Id = Id(v.id)
     }
 }
 
-public data class Range(
-    public val rangeId: Id,
-    public val erangeId: Id,
+internal data class Range(
+    val rangeId: Id,
+    val erangeId: Id,
 ) {
-    public fun id(): Id = rangeId
+    fun id(): Id = rangeId
 }
 
-public class Block(
-    public val instrs: MutableList<Pair<Id, Instr>> = mutableListOf(),
+internal class Block(
+    val instrs: MutableList<Pair<Id, Instr>> = mutableListOf(),
 ) {
-    public fun range(lo: A, up: A, step: Int): Range {
+    internal fun range(lo: A, up: A, step: Int): Range {
         val rangeId = Id.new()
         val erangeId = Id.new()
         val range = Instr.Range(lo = lo, up = up, step = step, endIdx = erangeId.toVarId())
@@ -50,12 +50,12 @@ public class Block(
         return Range(rangeId, erangeId)
     }
 
-    public fun endRange(range: Range) {
+    internal fun endRange(range: Range) {
         val erange = Instr.EndRange(startIdx = range.rangeId.toVarId())
         instrs.add(Pair(range.erangeId, erange))
     }
 
-    public fun add(srcId: Id, v: Int): Id {
+    internal fun add(srcId: Id, v: Int): Id {
         if (v == 0) {
             return srcId
         }
@@ -74,7 +74,7 @@ public class Block(
         return dstId
     }
 
-    public fun mul(srcId: Id, v: Int): Id {
+    internal fun mul(srcId: Id, v: Int): Id {
         if (v == 1) {
             return srcId
         }
@@ -93,33 +93,33 @@ public class Block(
         return dstId
     }
 
-    public fun cst(c: Const): Id = push(Instr.Constant(c))
+    internal fun cst(c: Const): Id = push(Instr.Constant(c))
 
-    public fun cst(c: Int): Id = cst(Const.I32(c))
+    internal fun cst(c: Int): Id = cst(Const.I32(c))
 
-    public fun push(inst: Instr): Id {
+    internal fun push(inst: Instr): Id {
         val id = Id.new()
         instrs.add(Pair(id, inst))
         return id
     }
 
-    public fun unary(op: UnaryOp, arg: A, dtype: DType): Id {
+    internal fun unary(op: UnaryOp, arg: A, dtype: DType): Id {
         val id = Id.new()
         instrs.add(Pair(id, Instr.Unary(op, arg, dtype)))
         return id
     }
 
-    public fun unary(op: UnaryOp, arg: Id, dtype: DType): Id = unary(op, arg.toA(), dtype)
+    internal fun unary(op: UnaryOp, arg: Id, dtype: DType): Id = unary(op, arg.toA(), dtype)
 
-    public fun binary(op: BinaryOp, lhs: A, rhs: A, dtype: DType): Id {
+    internal fun binary(op: BinaryOp, lhs: A, rhs: A, dtype: DType): Id {
         val id = Id.new()
         instrs.add(Pair(id, Instr.Binary(op, lhs, rhs, dtype)))
         return id
     }
 
-    public fun binary(op: BinaryOp, lhs: Id, rhs: Id, dtype: DType): Id = binary(op, lhs.toA(), rhs.toA(), dtype)
+    internal fun binary(op: BinaryOp, lhs: Id, rhs: Id, dtype: DType): Id = binary(op, lhs.toA(), rhs.toA(), dtype)
 
-    public fun relocate(): List<Instr> {
+    internal fun relocate(): List<Instr> {
         val perId = mutableMapOf<Id, VarId>()
         for ((lineIdx, pair) in instrs.withIndex()) {
             val varId = VarId.new(lineIdx)
@@ -216,9 +216,9 @@ public class Block(
         return result
     }
 
-    public companion object {
-        public fun empty(): Block = Block()
+    internal companion object {
+        internal fun empty(): Block = Block()
 
-        public fun new(instrs: List<Pair<Id, Instr>>): Block = Block(instrs.toMutableList())
+        internal fun new(instrs: List<Pair<Id, Instr>>): Block = Block(instrs.toMutableList())
     }
 }

@@ -22,7 +22,7 @@ import io.github.kotlinmania.ug.lang.ssa.Special
 import io.github.kotlinmania.ug.lang.ssa.VarId
 import io.github.kotlinmania.ug.lang.ssa.toA
 
-public fun lowerIndexExprNode(node: IndexExprNode): Pair<Id, Block> {
+internal fun lowerIndexExprNode(node: IndexExprNode): Pair<Id, Block> {
     val dstId = Id.new()
     val block =
         when (val e = node.expr) {
@@ -65,7 +65,7 @@ public fun lowerIndexExprNode(node: IndexExprNode): Pair<Id, Block> {
     return Pair(dstId, block)
 }
 
-public fun lowerStridedSlice(
+internal fun lowerStridedSlice(
     slice: StridedSlice,
     rangeId: Id,
     perArg: Map<ArgId, VarId>,
@@ -121,7 +121,7 @@ public fun lowerStridedSlice(
     }
 }
 
-public fun lowerExprNode(
+internal fun lowerExprNode(
     node: ExprNode,
     rangeId: Id,
     perArg: Map<ArgId, VarId>,

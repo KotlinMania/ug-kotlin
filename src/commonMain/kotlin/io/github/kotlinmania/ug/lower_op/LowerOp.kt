@@ -51,44 +51,44 @@ public data class Opts(
     }
 }
 
-public sealed class IndexFormula {
-    public data class IdFormula(
-        public val id: Id,
+internal sealed class IndexFormula {
+    internal data class IdFormula(
+        val id: Id,
     ) : IndexFormula()
 
-    public data class Constant(
-        public val value: Int,
+    internal data class Constant(
+        val value: Int,
     ) : IndexFormula()
 
-    public data class Add(
-        public val lhs: IndexFormula,
-        public val rhs: IndexFormula,
+    internal data class Add(
+        val lhs: IndexFormula,
+        val rhs: IndexFormula,
     ) : IndexFormula()
 
-    public data class Mul(
-        public val lhs: IndexFormula,
-        public val rhs: Int,
+    internal data class Mul(
+        val lhs: IndexFormula,
+        val rhs: Int,
     ) : IndexFormula()
 
-    public data class Div(
-        public val lhs: IndexFormula,
-        public val rhs: Int,
+    internal data class Div(
+        val lhs: IndexFormula,
+        val rhs: Int,
     ) : IndexFormula()
 
-    public data class Mod(
-        public val lhs: IndexFormula,
-        public val rhs: Int,
+    internal data class Mod(
+        val lhs: IndexFormula,
+        val rhs: Int,
     ) : IndexFormula()
 
-    public fun add(rhs: IndexFormula): IndexFormula = Add(this, rhs)
+    fun add(rhs: IndexFormula): IndexFormula = Add(this, rhs)
 
-    public fun mul(rhs: Int): IndexFormula = Mul(this, rhs)
+    fun mul(rhs: Int): IndexFormula = Mul(this, rhs)
 
-    public fun div(rhs: Int): IndexFormula = Div(this, rhs)
+    fun div(rhs: Int): IndexFormula = Div(this, rhs)
 
-    public fun mod(rhs: Int): IndexFormula = Mod(this, rhs)
+    fun mod(rhs: Int): IndexFormula = Mod(this, rhs)
 
-    public fun eval(block: Block): Id =
+    fun eval(block: Block): Id =
         when (this) {
             is IdFormula -> id
             is Constant -> block.cst(value)
@@ -123,10 +123,10 @@ public sealed class IndexFormula {
         }
 }
 
-public data class Indexes(
-    public val list: MutableList<IndexFormula>,
+internal data class Indexes(
+    internal val list: MutableList<IndexFormula>,
 ) {
-    public fun layoutOp(op: LayoutOp, shape: Shape, argShape: Shape): Indexes {
+    internal fun layoutOp(op: LayoutOp, shape: Shape, argShape: Shape): Indexes {
         val idxs = list.toMutableList()
         when (op) {
             is LayoutOp.Broadcast -> {
@@ -201,7 +201,7 @@ public data class Indexes(
     }
 }
 
-public fun Layout.lower(idxs: Indexes): Pair<Id, Block> {
+internal fun Layout.lower(idxs: Indexes): Pair<Id, Block> {
     if (idxs.list.size != strides.size) {
         throw UgError.Msg("len mismatch between strides $this and idxs $idxs")
     }
@@ -227,7 +227,7 @@ public fun Layout.lower(idxs: Indexes): Pair<Id, Block> {
     }
 }
 
-public fun Ast.lower(
+internal fun Ast.lower(
     idxs: Indexes,
     opts: Opts,
     perArg: Map<ArgId, VarId>,

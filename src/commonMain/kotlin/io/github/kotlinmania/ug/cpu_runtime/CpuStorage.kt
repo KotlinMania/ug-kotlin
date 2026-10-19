@@ -9,7 +9,7 @@ import io.github.kotlinmania.ug.Slice
 import io.github.kotlinmania.ug.UgError
 
 public sealed class CpuStorage : Slice {
-    public data class BF16Storage(
+    public class BF16Storage internal constructor(
         public val data: Array<BF16>,
     ) : CpuStorage() {
         override val len: Int get() = data.size
@@ -20,7 +20,7 @@ public sealed class CpuStorage : Slice {
         override fun hashCode(): Int = data.contentHashCode()
     }
 
-    public data class F16Storage(
+    public class F16Storage internal constructor(
         public val data: Array<F16>,
     ) : CpuStorage() {
         override val len: Int get() = data.size
@@ -210,8 +210,8 @@ public sealed class CpuStorage : Slice {
 
         public fun from(data: LongArray): I64Storage = I64Storage(data.copyOf())
 
-        public fun from(data: Array<F16>): F16Storage = F16Storage(data.copyOf())
+        internal fun from(data: Array<F16>): F16Storage = F16Storage(data.copyOf())
 
-        public fun from(data: Array<BF16>): BF16Storage = BF16Storage(data.copyOf())
+        internal fun from(data: Array<BF16>): BF16Storage = BF16Storage(data.copyOf())
     }
 }

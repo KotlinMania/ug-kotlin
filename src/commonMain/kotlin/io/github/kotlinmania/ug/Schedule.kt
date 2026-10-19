@@ -9,13 +9,13 @@ import io.github.kotlinmania.ug.lang.op.Ast
 import io.github.kotlinmania.ug.lang.op.AstInner
 import io.github.kotlinmania.ug.lower_op.Opts
 
-public class KernelItem(
-    public val ast: Ast,
-    public val dst: Pair<ArgId, LazyBuffer>,
-    public val dstLayout: Layout?,
-    public val args: List<Pair<ArgId, LazyBuffer>>,
+internal class KernelItem(
+    val ast: Ast,
+    val dst: Pair<ArgId, LazyBuffer>,
+    val dstLayout: Layout?,
+    val args: List<Pair<ArgId, LazyBuffer>>,
 ) {
-    public fun kernel(): io.github.kotlinmania.ug.lang.op.Kernel {
+    fun kernel(): io.github.kotlinmania.ug.lang.op.Kernel {
         val kernelArgs =
             args.map { (id, lb) ->
                 io.github.kotlinmania.ug.lang.Arg(id, UgType.Ptr(lb.dtype))
@@ -30,52 +30,52 @@ public class KernelItem(
     }
 }
 
-public sealed class ScheduleItem {
-    public data class Kernel(
-        public val item: KernelItem,
+internal sealed class ScheduleItem {
+    internal data class Kernel(
+        val item: KernelItem,
     ) : ScheduleItem()
 
-    public data class MatMul(
-        public val dst: LazyBuffer,
-        public val lhs: LazyBuffer,
-        public val rhs: LazyBuffer,
-        public val bmnk: List<Int>,
-        public val transpose: Boolean,
+    internal data class MatMul(
+        val dst: LazyBuffer,
+        val lhs: LazyBuffer,
+        val rhs: LazyBuffer,
+        val bmnk: List<Int>,
+        val transpose: Boolean,
     ) : ScheduleItem()
 
-    public data class Custom(
-        public val f: CustomF,
-        public val args: List<Pair<ArgId, LazyBuffer>>,
+    internal data class Custom(
+        val f: CustomF,
+        val args: List<Pair<ArgId, LazyBuffer>>,
     ) : ScheduleItem()
 
-    public data class Ssa(
-        public val ssa: io.github.kotlinmania.ug.lang.ssa.Kernel,
-        public val args: List<Pair<ArgId, LazyBuffer>>,
+    internal data class Ssa(
+        val ssa: io.github.kotlinmania.ug.lang.ssa.Kernel,
+        val args: List<Pair<ArgId, LazyBuffer>>,
     ) : ScheduleItem()
 }
 
-public sealed class Func {
-    public data class Kernel(
-        public val func: Any,
-        public val args: List<Pair<ArgId, LazyBuffer>>,
+internal sealed class Func {
+    internal data class Kernel(
+        val func: Any,
+        val args: List<Pair<ArgId, LazyBuffer>>,
     ) : Func()
 
-    public data class MatMul(
-        public val dst: LazyBuffer,
-        public val lhs: LazyBuffer,
-        public val rhs: LazyBuffer,
-        public val bmnk: List<Int>,
-        public val transpose: Boolean,
+    internal data class MatMul(
+        val dst: LazyBuffer,
+        val lhs: LazyBuffer,
+        val rhs: LazyBuffer,
+        val bmnk: List<Int>,
+        val transpose: Boolean,
     ) : Func()
 
-    public data class Custom(
-        public val f: CustomF,
-        public val args: List<Pair<ArgId, LazyBuffer>>,
+    internal data class Custom(
+        val f: CustomF,
+        val args: List<Pair<ArgId, LazyBuffer>>,
     ) : Func()
 }
 
-public class CompiledSchedule(
-    public val funcs: List<Func>,
+public class CompiledSchedule internal constructor(
+    internal val funcs: List<Func>,
     public val device: Device,
 ) {
     public fun run() {
@@ -150,9 +150,9 @@ public class CompiledSchedule(
     }
 }
 
-public class Schedule(
-    public val items: List<ScheduleItem>,
-    public val perArgId: Map<ArgId, LazyBuffer>,
+public class Schedule internal constructor(
+    internal val items: List<ScheduleItem>,
+    internal val perArgId: Map<ArgId, LazyBuffer>,
     public val device: Device,
 ) {
     public fun getArgId(argId: ArgId): LazyBuffer =
