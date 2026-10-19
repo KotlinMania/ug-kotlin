@@ -71,8 +71,24 @@ public inline fun <reified T> Slice.toVec(): List<T> =
     }
 
 public fun <T : Any> Slice.toVec(withDType: WithDType<T>): List<T> {
-    val storage =
-        this as? io.github.kotlinmania.ug.cpuruntime.CpuStorage
-            ?: throw UgError.Msg("expected CpuStorage")
-    return withDType.fromCpuStorage(storage)
+    val storage = this as? io.github.kotlinmania.ug.cpuruntime.CpuStorage
+    if (storage != null) {
+        return withDType.fromCpuStorage(storage)
+    }
+    @Suppress("UNCHECKED_CAST")
+    return when (withDType.dtype) {
+        DType.F32 -> toFloatArray().toList() as List<T>
+        DType.I32 -> toIntArray().toList() as List<T>
+        DType.I64 -> toLongArray().toList() as List<T>
+        DType.F16 -> {
+            val dst = Array(len) { io.github.kotlinmania.half.F16() }
+            copyDeviceToHost(dst)
+            dst.toList() as List<T>
+        }
+        DType.BF16 -> {
+            val dst = Array(len) { io.github.kotlinmania.half.BF16() }
+            copyDeviceToHost(dst)
+            dst.toList() as List<T>
+        }
+    }
 }
