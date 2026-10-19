@@ -16,7 +16,6 @@ import io.github.kotlinmania.ug.lang.Kernel
 import io.github.kotlinmania.ug.lang.Ops
 import io.github.kotlinmania.ug.lang.StridedSlice
 import io.github.kotlinmania.ug.lang.UgType
-import io.github.kotlinmania.ug.lang.ssa.A
 import io.github.kotlinmania.ug.lang.ssa.Instr
 import io.github.kotlinmania.ug.lang.ssa.Special
 import io.github.kotlinmania.ug.lang.ssa.VarId

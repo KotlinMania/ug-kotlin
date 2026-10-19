@@ -223,7 +223,7 @@ public object Samples {
             }
             val redMaxI = b.push(Instr.ReduceLocal(op = ReduceOp.Max, arg = maxI.toA(), dtype = dtype))
 
-            val valueIs = mutableListOf<Id>()
+            val valueIs = ArrayList<Id>(perBlock)
             var sumI = b.push(Instr.Constant(Const.I32(0)))
             for (loadI in loadIs) {
                 val valueSub = b.binary(BinaryOp.Sub, loadI, redMaxI, dtype)

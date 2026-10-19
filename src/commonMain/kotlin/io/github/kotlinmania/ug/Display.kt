@@ -1,8 +1,6 @@
 // port-lint: source display.rs
 package io.github.kotlinmania.ug
 
-import io.github.kotlinmania.half.BF16
-import io.github.kotlinmania.half.F16
 import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.log10
@@ -100,7 +98,7 @@ internal class FloatFormatter(
             val sign = if (v < 0.0f) "-" else ""
             val absV = abs(v.toDouble())
             var exp = floor(log10(absV)).toInt()
-            var mantissa = absV / 10.0.pow(exp.toDouble())
+            val mantissa = absV / 10.0.pow(exp.toDouble())
             val factor = 10.0.pow(precision.toDouble())
             var roundedMantissa = (mantissa * factor).roundToLong()
             if (roundedMantissa >= (10.0 * factor).roundToLong()) {
@@ -214,7 +212,7 @@ private fun getSummarizedData(t: LazyBuffer, edgeItems: Int): LazyBuffer {
 
 private fun writeNewlineIndent(i: Int, sb: StringBuilder) {
     sb.append('\n')
-    for (k in 0 until i) {
+    repeat(i) {
         sb.append(' ')
     }
 }

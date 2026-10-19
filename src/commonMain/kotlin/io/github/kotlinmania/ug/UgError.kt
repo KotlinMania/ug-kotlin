@@ -67,7 +67,7 @@ public sealed class UgError(
     public class WithBacktrace(
         public val inner: UgError,
         public val backtrace: String = "",
-    ) : UgError(inner.message ?: "", inner)
+    ) : UgError(inner.message.orEmpty(), inner)
 
     public class MatMulStriding(
         public val info: MatMulUnexpectedStriding,
