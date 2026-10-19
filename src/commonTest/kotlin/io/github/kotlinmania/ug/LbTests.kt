@@ -17,7 +17,7 @@ class LbTests {
         val rhs = LazyBuffer.cst(2.0f, Pair(5, 2), cpu)
         val lb = lhs.binary(io.github.kotlinmania.ug.lang.BinaryOp.Add, rhs)
         val schedule = Schedule.createOne(lb)
-        val items = schedule.items()
+        val items = schedule.items
         assertEquals(1, items.size)
         for (item in items) {
             val kernel =
@@ -41,7 +41,7 @@ class LbTests {
         val rhs = LazyBuffer.cst(2.0f, Pair(5, 2), cpu)
         val lb = lhs.binary(io.github.kotlinmania.ug.lang.BinaryOp.Add, rhs)
         val schedule = Schedule.createOne(lb)
-        val items = schedule.items()
+        val items = schedule.items
         assertEquals(1, items.size)
         val kernel =
             when (val item = items[0]) {
