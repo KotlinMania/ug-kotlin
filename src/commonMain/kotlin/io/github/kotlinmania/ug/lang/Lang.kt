@@ -98,8 +98,6 @@ public data class Arg(
     public val id: ArgId,
     public val type: UgType,
 ) : Comparable<Arg> {
-    public fun id(): ArgId = id
-
     public fun type_(): UgType = type
 
     override fun compareTo(other: Arg): Int = id.compareTo(other.id)
@@ -169,15 +167,7 @@ public data class StridedSlice(
     public val offset: IndexExprNode,
     public val len: IndexExprNode,
     public val stride: IndexExprNode,
-) {
-    public fun ptr(): Arg = ptr
-
-    public fun offset(): IndexExprNode = offset
-
-    public fun len(): IndexExprNode = len
-
-    public fun stride(): IndexExprNode = stride
-}
+)
 
 public sealed class Expr {
     public data class Constant(
