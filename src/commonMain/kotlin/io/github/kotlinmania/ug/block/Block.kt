@@ -128,7 +128,7 @@ internal class Block(
         val result = mutableListOf<Instr>()
         for ((_, instr) in instrs) {
             fun getId(id: VarId): VarId =
-                perId[Id.fromVarId(id)] ?: throw UgError.Msg("id not found $id")
+                perId[Id.fromVarId(id)] ?: UgError.Msg("id not found $id").raise()
 
             fun getA(a: A): A =
                 when (a) {

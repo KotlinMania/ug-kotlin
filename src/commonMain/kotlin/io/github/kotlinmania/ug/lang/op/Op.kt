@@ -235,7 +235,7 @@ public data class Kernel(
                 }
 
                 is AstInner.Reduce -> {
-                    throw UgError.Msg("unexpected result in optimize step")
+                    UgError.Msg("unexpected result in optimize step").raise()
                 }
 
                 is AstInner.LayoutOperation -> {
@@ -246,7 +246,7 @@ public data class Kernel(
                         }
 
                         else -> {
-                            throw UgError.Msg("unexpected layout op ${in_.op}")
+                            UgError.Msg("unexpected layout op ${in_.op}").raise()
                         }
                     }
                 }
@@ -289,7 +289,7 @@ public fun load(src: ArgId, layout: Layout, dtype: DType): Ast {
 public fun broadcast(arg: Ast, shape: Shape): Ast {
     val dtype = arg.dtype
     if (arg.shape.rank() > shape.rank()) {
-        throw UgError.Msg("target shape $shape has less dimensions than original shape ${arg.shape}")
+        UgError.Msg("target shape $shape has less dimensions than original shape ${arg.shape}").raise()
     }
     val insertedDims = shape.rank() - arg.shape.rank()
     val broadcastedDims = (0 until insertedDims).toMutableList()
@@ -299,7 +299,7 @@ public fun broadcast(arg: Ast, shape: Shape): Ast {
             if (dimLen == 1) {
                 broadcastedDims.add(actualIdx)
             } else {
-                throw UgError.Msg("cannot broadcast from ${arg.shape} to $shape")
+                UgError.Msg("cannot broadcast from ${arg.shape} to $shape").raise()
             }
         }
     }
@@ -331,7 +331,7 @@ public fun reduce(op: ReduceOp, arg: Ast, dim: Int): Ast {
     val dtype = arg.dtype
     val shapeDims = arg.shape.dims.toMutableList()
     if (dim >= shapeDims.size) {
-        throw UgError.Msg("no dim $dim in shape ${arg.shape}")
+        UgError.Msg("no dim $dim in shape ${arg.shape}").raise()
     }
     shapeDims[dim] = 1
     val inner = AstInner.Reduce(op, arg, dim)
@@ -341,12 +341,12 @@ public fun reduce(op: ReduceOp, arg: Ast, dim: Int): Ast {
 public fun binary(op: BinaryOp, lhs: Ast, rhs: Ast): Ast {
     val dtype =
         if (lhs.dtype != rhs.dtype) {
-            throw UgError.Msg("dtype mismatch in $op, lhs: ${lhs.dtype}, rhs: ${rhs.dtype}")
+            UgError.Msg("dtype mismatch in $op, lhs: ${lhs.dtype}, rhs: ${rhs.dtype}").raise()
         } else {
             lhs.dtype
         }
     if (lhs.shape != rhs.shape && lhs.shape.rank() != 0 && rhs.shape.rank() != 0) {
-        throw UgError.Msg("shape mismatch in $op, lhs: ${lhs.shape}, rhs: ${rhs.shape}")
+        UgError.Msg("shape mismatch in $op, lhs: ${lhs.shape}, rhs: ${rhs.shape}").raise()
     }
     val shape = lhs.shape
     val inner = AstInner.Binary(op, lhs, rhs)

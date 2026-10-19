@@ -94,7 +94,7 @@ public class MatMul(
                     } else if (lhsL.dims[1] == 1) {
                         s0
                     } else {
-                        throw stridingError(lhsL, rhsL, "non-contiguous lhs")
+                        stridingError(lhsL, rhsL, "non-contiguous lhs").raise()
                     }
                 }
 
@@ -107,7 +107,7 @@ public class MatMul(
                 }
 
                 else -> {
-                    throw stridingError(lhsL, rhsL, "non-contiguous lhs")
+                    stridingError(lhsL, rhsL, "non-contiguous lhs").raise()
                 }
             }
 
@@ -124,7 +124,7 @@ public class MatMul(
                     } else if (rhsL.dims[1] == 1) {
                         s0
                     } else {
-                        throw stridingError(lhsL, rhsL, "non-contiguous rhs")
+                        stridingError(lhsL, rhsL, "non-contiguous rhs").raise()
                     }
                 }
 
@@ -137,7 +137,7 @@ public class MatMul(
                 }
 
                 else -> {
-                    throw stridingError(lhsL, rhsL, "non-contiguous rhs")
+                    stridingError(lhsL, rhsL, "non-contiguous rhs").raise()
                 }
             }
 
@@ -209,7 +209,7 @@ public class MatMul(
             }
 
             else -> {
-                throw UgError.Msg("incorrect dtypes for matmul, dst: ${dst.dtype}, lhs: ${lhs.dtype}, rhs: ${rhs.dtype}")
+                UgError.Msg("incorrect dtypes for matmul, dst: ${dst.dtype}, lhs: ${lhs.dtype}, rhs: ${rhs.dtype}").raise()
             }
         }
     }
@@ -244,15 +244,15 @@ public object CpuDevice : Device {
         compileC(cCodeBytes.decodeToString(), funcName)
 
     override fun run(f: Any, args: List<Slice>) {
-        val func = f as? CpuFunc ?: throw UgError.Msg("invalid func type for CpuDevice")
-        val kernel = func.kernel ?: throw UgError.Msg("kernel is null in CpuFunc")
+        val func = f as? CpuFunc ?: UgError.Msg("invalid func type for CpuDevice").raise()
+        val kernel = func.kernel ?: UgError.Msg("kernel is null in CpuFunc").raise()
         val buffers =
             args.map { slice ->
                 when (slice) {
                     is CpuStorage.F32Storage -> Buffer.F32(slice.data)
                     is CpuStorage.I32Storage -> Buffer.I32(slice.data)
                     is CpuStorage.I64Storage -> Buffer.I64(slice.data)
-                    else -> throw UgError.Msg("unsupported storage for run: ${slice.dtype}")
+                    else -> UgError.Msg("unsupported storage for run: ${slice.dtype}").raise()
                 }
             }
         evalSsa(kernel, buffers)
@@ -270,9 +270,9 @@ public object CpuDevice : Device {
         rhsL: Layout,
     ) {
         val mm = MatMul(b, m, n, k)
-        val dstStorage = dst as? CpuStorage ?: throw UgError.Msg("dst must be CpuStorage")
-        val lhsStorage = lhs as? CpuStorage ?: throw UgError.Msg("lhs must be CpuStorage")
-        val rhsStorage = rhs as? CpuStorage ?: throw UgError.Msg("rhs must be CpuStorage")
+        val dstStorage = dst as? CpuStorage ?: UgError.Msg("dst must be CpuStorage").raise()
+        val lhsStorage = lhs as? CpuStorage ?: UgError.Msg("lhs must be CpuStorage").raise()
+        val rhsStorage = rhs as? CpuStorage ?: UgError.Msg("rhs must be CpuStorage").raise()
         mm.gemm(dstStorage, lhsStorage, lhsL, rhsStorage, rhsL)
     }
 }

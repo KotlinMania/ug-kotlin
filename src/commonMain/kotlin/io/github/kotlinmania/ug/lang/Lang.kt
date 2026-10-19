@@ -244,7 +244,7 @@ public data class ExprNode(
             val dtype =
                 when (val t = ptr.type) {
                     is UgType.Ptr -> t.dtype
-                    is UgType.Value -> throw UgError.Msg("non-pointer arguments are not supported yet")
+                    is UgType.Value -> UgError.Msg("non-pointer arguments are not supported yet").raise()
                 }
             val ss = StridedSlice(ptr, offset, len, stride)
             return ExprNode(Expr.Load(ss), dtype)

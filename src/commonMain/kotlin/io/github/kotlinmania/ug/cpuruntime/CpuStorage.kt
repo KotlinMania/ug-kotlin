@@ -10,25 +10,39 @@ import io.github.kotlinmania.ug.UgError
 
 public sealed class CpuStorage : Slice {
     public class BF16Storage internal constructor(
-        public val data: Array<BF16>,
+        internal val buffer: Array<BF16>,
     ) : CpuStorage() {
-        override val len: Int get() = data.size
+        public val data: List<BF16> = buffer.asList()
+        override val len: Int get() = buffer.size
         override val dtype: DType get() = DType.BF16
 
-        override fun equals(other: Any?): Boolean = other is BF16Storage && data.contentEquals(other.data)
+        public operator fun get(index: Int): BF16 = buffer[index]
 
-        override fun hashCode(): Int = data.contentHashCode()
+        public operator fun set(index: Int, value: BF16) {
+            buffer[index] = value
+        }
+
+        override fun equals(other: Any?): Boolean = other is BF16Storage && buffer.contentEquals(other.buffer)
+
+        override fun hashCode(): Int = buffer.contentHashCode()
     }
 
     public class F16Storage internal constructor(
-        public val data: Array<F16>,
+        internal val buffer: Array<F16>,
     ) : CpuStorage() {
-        override val len: Int get() = data.size
+        public val data: List<F16> = buffer.asList()
+        override val len: Int get() = buffer.size
         override val dtype: DType get() = DType.F16
 
-        override fun equals(other: Any?): Boolean = other is F16Storage && data.contentEquals(other.data)
+        public operator fun get(index: Int): F16 = buffer[index]
 
-        override fun hashCode(): Int = data.contentHashCode()
+        public operator fun set(index: Int, value: F16) {
+            buffer[index] = value
+        }
+
+        override fun equals(other: Any?): Boolean = other is F16Storage && buffer.contentEquals(other.buffer)
+
+        override fun hashCode(): Int = buffer.contentHashCode()
     }
 
     public data class F32Storage(
@@ -69,12 +83,12 @@ public sealed class CpuStorage : Slice {
     override fun copyHostToDevice(src: FloatArray) {
         when (this) {
             is F32Storage -> {
-                if (src.size != len) throw UgError.Msg("htod len mismatch, dst $len, len ${src.size}")
+                if (src.size != len) UgError.Msg("htod len mismatch, dst $len, len ${src.size}").raise()
                 src.copyInto(data)
             }
 
             else -> {
-                throw UgError.Msg("htod dtype mismatch, dst $dtype, src F32")
+                UgError.Msg("htod dtype mismatch, dst $dtype, src F32").raise()
             }
         }
     }
@@ -82,12 +96,12 @@ public sealed class CpuStorage : Slice {
     override fun copyHostToDevice(src: IntArray) {
         when (this) {
             is I32Storage -> {
-                if (src.size != len) throw UgError.Msg("htod len mismatch, dst $len, len ${src.size}")
+                if (src.size != len) UgError.Msg("htod len mismatch, dst $len, len ${src.size}").raise()
                 src.copyInto(data)
             }
 
             else -> {
-                throw UgError.Msg("htod dtype mismatch, dst $dtype, src I32")
+                UgError.Msg("htod dtype mismatch, dst $dtype, src I32").raise()
             }
         }
     }
@@ -95,12 +109,12 @@ public sealed class CpuStorage : Slice {
     override fun copyHostToDevice(src: LongArray) {
         when (this) {
             is I64Storage -> {
-                if (src.size != len) throw UgError.Msg("htod len mismatch, dst $len, len ${src.size}")
+                if (src.size != len) UgError.Msg("htod len mismatch, dst $len, len ${src.size}").raise()
                 src.copyInto(data)
             }
 
             else -> {
-                throw UgError.Msg("htod dtype mismatch, dst $dtype, src I64")
+                UgError.Msg("htod dtype mismatch, dst $dtype, src I64").raise()
             }
         }
     }
@@ -108,12 +122,12 @@ public sealed class CpuStorage : Slice {
     override fun copyHostToDevice(src: Array<F16>) {
         when (this) {
             is F16Storage -> {
-                if (src.size != len) throw UgError.Msg("htod len mismatch, dst $len, len ${src.size}")
-                src.copyInto(data)
+                if (src.size != len) UgError.Msg("htod len mismatch, dst $len, len ${src.size}").raise()
+                src.copyInto(buffer)
             }
 
             else -> {
-                throw UgError.Msg("htod dtype mismatch, dst $dtype, src F16")
+                UgError.Msg("htod dtype mismatch, dst $dtype, src F16").raise()
             }
         }
     }
@@ -121,12 +135,12 @@ public sealed class CpuStorage : Slice {
     override fun copyHostToDevice(src: Array<BF16>) {
         when (this) {
             is BF16Storage -> {
-                if (src.size != len) throw UgError.Msg("htod len mismatch, dst $len, len ${src.size}")
-                src.copyInto(data)
+                if (src.size != len) UgError.Msg("htod len mismatch, dst $len, len ${src.size}").raise()
+                src.copyInto(buffer)
             }
 
             else -> {
-                throw UgError.Msg("htod dtype mismatch, dst $dtype, src BF16")
+                UgError.Msg("htod dtype mismatch, dst $dtype, src BF16").raise()
             }
         }
     }
@@ -134,12 +148,12 @@ public sealed class CpuStorage : Slice {
     override fun copyDeviceToHost(dst: FloatArray) {
         when (this) {
             is F32Storage -> {
-                if (dst.size != len) throw UgError.Msg("dtoh len mismatch, dst ${dst.size}, len $len")
+                if (dst.size != len) UgError.Msg("dtoh len mismatch, dst ${dst.size}, len $len").raise()
                 data.copyInto(dst)
             }
 
             else -> {
-                throw UgError.Msg("dtoh dtype mismatch, dst F32, src $dtype")
+                UgError.Msg("dtoh dtype mismatch, dst F32, src $dtype").raise()
             }
         }
     }
@@ -147,12 +161,12 @@ public sealed class CpuStorage : Slice {
     override fun copyDeviceToHost(dst: IntArray) {
         when (this) {
             is I32Storage -> {
-                if (dst.size != len) throw UgError.Msg("dtoh len mismatch, dst ${dst.size}, len $len")
+                if (dst.size != len) UgError.Msg("dtoh len mismatch, dst ${dst.size}, len $len").raise()
                 data.copyInto(dst)
             }
 
             else -> {
-                throw UgError.Msg("dtoh dtype mismatch, dst I32, src $dtype")
+                UgError.Msg("dtoh dtype mismatch, dst I32, src $dtype").raise()
             }
         }
     }
@@ -160,12 +174,12 @@ public sealed class CpuStorage : Slice {
     override fun copyDeviceToHost(dst: LongArray) {
         when (this) {
             is I64Storage -> {
-                if (dst.size != len) throw UgError.Msg("dtoh len mismatch, dst ${dst.size}, len $len")
+                if (dst.size != len) UgError.Msg("dtoh len mismatch, dst ${dst.size}, len $len").raise()
                 data.copyInto(dst)
             }
 
             else -> {
-                throw UgError.Msg("dtoh dtype mismatch, dst I64, src $dtype")
+                UgError.Msg("dtoh dtype mismatch, dst I64, src $dtype").raise()
             }
         }
     }
@@ -173,12 +187,12 @@ public sealed class CpuStorage : Slice {
     override fun copyDeviceToHost(dst: Array<F16>) {
         when (this) {
             is F16Storage -> {
-                if (dst.size != len) throw UgError.Msg("dtoh len mismatch, dst ${dst.size}, len $len")
-                data.copyInto(dst)
+                if (dst.size != len) UgError.Msg("dtoh len mismatch, dst ${dst.size}, len $len").raise()
+                buffer.copyInto(dst)
             }
 
             else -> {
-                throw UgError.Msg("dtoh dtype mismatch, dst F16, src $dtype")
+                UgError.Msg("dtoh dtype mismatch, dst F16, src $dtype").raise()
             }
         }
     }
@@ -186,12 +200,12 @@ public sealed class CpuStorage : Slice {
     override fun copyDeviceToHost(dst: Array<BF16>) {
         when (this) {
             is BF16Storage -> {
-                if (dst.size != len) throw UgError.Msg("dtoh len mismatch, dst ${dst.size}, len $len")
-                data.copyInto(dst)
+                if (dst.size != len) UgError.Msg("dtoh len mismatch, dst ${dst.size}, len $len").raise()
+                buffer.copyInto(dst)
             }
 
             else -> {
-                throw UgError.Msg("dtoh dtype mismatch, dst BF16, src $dtype")
+                UgError.Msg("dtoh dtype mismatch, dst BF16, src $dtype").raise()
             }
         }
     }

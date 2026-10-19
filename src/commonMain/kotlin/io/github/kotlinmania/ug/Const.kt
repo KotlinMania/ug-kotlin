@@ -40,7 +40,7 @@ public sealed class Const : Comparable<Const> {
     ) : Const() {
         init {
             if (value.isNaN()) {
-                throw UgError.Msg("cannot use nan in const")
+                UgError.Msg("cannot use nan in const").raise()
             }
         }
 

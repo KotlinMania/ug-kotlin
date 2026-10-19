@@ -32,7 +32,7 @@ public enum class DType(
                 "bf16" -> BF16
                 "f16" -> F16
                 "f32" -> F32
-                else -> throw UgError.Msg("cannot parse '$s' as a dtype")
+                else -> UgError.Msg("cannot parse '$s' as a dtype").raise()
             }
     }
 }

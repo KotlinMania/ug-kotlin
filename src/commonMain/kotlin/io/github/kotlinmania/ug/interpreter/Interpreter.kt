@@ -62,19 +62,19 @@ public sealed class Buffer {
     public fun asF32(): FloatArray =
         when (this) {
             is F32 -> data
-            else -> throw UgError.Msg("buffer is not f32")
+            else -> UgError.Msg("buffer is not f32").raise()
         }
 
     public fun asI32(): IntArray =
         when (this) {
             is I32 -> data
-            else -> throw UgError.Msg("buffer is not i32")
+            else -> UgError.Msg("buffer is not i32").raise()
         }
 
     public fun asI64(): LongArray =
         when (this) {
             is I64 -> data
-            else -> throw UgError.Msg("buffer is not i64")
+            else -> UgError.Msg("buffer is not i64").raise()
         }
 }
 
@@ -120,7 +120,7 @@ public fun evalSsa(
     fun getA(a: A): Value =
         when (a) {
             is A.Var -> {
-                values[a.id.id] ?: throw UgError.Msg("uninitialized var ${a.id}")
+                values[a.id.id] ?: UgError.Msg("uninitialized var ${a.id}").raise()
             }
 
             is A.Constant -> {
@@ -227,12 +227,12 @@ public fun evalSsa(
 
             is Instr.Load -> {
                 val off = (getA(instr.offset) as Value.I32Val).values
-                val ptrVal = values[instr.src.id] ?: throw UgError.Msg("src pointer not found")
+                val ptrVal = values[instr.src.id] ?: UgError.Msg("src pointer not found").raise()
                 val buf =
                     when (ptrVal) {
                         is Value.Ptr -> buffers[ptrVal.index]
                         is Value.LocalPtr -> localBuffers[ptrVal.index]
-                        else -> throw UgError.Msg("unexpected pointer value")
+                        else -> UgError.Msg("unexpected pointer value").raise()
                     }
                 values[currentIdx] =
                     when (buf) {
@@ -245,12 +245,12 @@ public fun evalSsa(
             is Instr.Store -> {
                 val off = (getA(instr.offset) as Value.I32Val).values
                 val value = getA(instr.value)
-                val ptrVal = values[instr.dst.id] ?: throw UgError.Msg("dst pointer not found")
+                val ptrVal = values[instr.dst.id] ?: UgError.Msg("dst pointer not found").raise()
                 val buf =
                     when (ptrVal) {
                         is Value.Ptr -> buffers[ptrVal.index]
                         is Value.LocalPtr -> localBuffers[ptrVal.index]
-                        else -> throw UgError.Msg("unexpected pointer value")
+                        else -> UgError.Msg("unexpected pointer value").raise()
                     }
                 when (buf) {
                     is Buffer.F32 -> {
@@ -335,7 +335,7 @@ public fun evalSsa(
                         }
 
                         else -> {
-                            throw UgError.Msg("type mismatch in binary op ${instr.op}")
+                            UgError.Msg("type mismatch in binary op ${instr.op}").raise()
                         }
                     }
             }
@@ -352,35 +352,35 @@ public fun evalSsa(
                             when (arg) {
                                 is Value.F32Val -> Value.F32Val(FloatArray(warpSize) { -arg.values[it] })
                                 is Value.I32Val -> Value.I32Val(IntArray(warpSize) { -arg.values[it] })
-                                else -> throw UgError.Msg("dtype mismatch for Neg $arg")
+                                else -> UgError.Msg("dtype mismatch for Neg $arg").raise()
                             }
                         }
 
                         UnaryOp.Exp -> {
                             when (arg) {
                                 is Value.F32Val -> Value.F32Val(FloatArray(warpSize) { exp(arg.values[it]) })
-                                else -> throw UgError.Msg("dtype mismatch for Exp $arg")
+                                else -> UgError.Msg("dtype mismatch for Exp $arg").raise()
                             }
                         }
 
                         UnaryOp.Sqrt -> {
                             when (arg) {
                                 is Value.F32Val -> Value.F32Val(FloatArray(warpSize) { sqrt(arg.values[it]) })
-                                else -> throw UgError.Msg("dtype mismatch for Sqrt $arg")
+                                else -> UgError.Msg("dtype mismatch for Sqrt $arg").raise()
                             }
                         }
 
                         UnaryOp.Sin -> {
                             when (arg) {
                                 is Value.F32Val -> Value.F32Val(FloatArray(warpSize) { sin(arg.values[it]) })
-                                else -> throw UgError.Msg("dtype mismatch for Sin $arg")
+                                else -> UgError.Msg("dtype mismatch for Sin $arg").raise()
                             }
                         }
 
                         UnaryOp.Cos -> {
                             when (arg) {
                                 is Value.F32Val -> Value.F32Val(FloatArray(warpSize) { cos(arg.values[it]) })
-                                else -> throw UgError.Msg("dtype mismatch for Cos $arg")
+                                else -> UgError.Msg("dtype mismatch for Cos $arg").raise()
                             }
                         }
 
@@ -390,7 +390,7 @@ public fun evalSsa(
                                     when (instr.dtype) {
                                         DType.F32 -> Value.F32Val(arg.values.copyOf())
                                         DType.I32 -> Value.I32Val(IntArray(warpSize) { arg.values[it].toInt() })
-                                        else -> throw UgError.Msg("dtype mismatch for Cast $arg to ${instr.dtype}")
+                                        else -> UgError.Msg("dtype mismatch for Cast $arg to ${instr.dtype}").raise()
                                     }
                                 }
 
@@ -398,12 +398,12 @@ public fun evalSsa(
                                     when (instr.dtype) {
                                         DType.I32 -> Value.I32Val(arg.values.copyOf())
                                         DType.F32 -> Value.F32Val(FloatArray(warpSize) { arg.values[it].toFloat() })
-                                        else -> throw UgError.Msg("dtype mismatch for Cast $arg to ${instr.dtype}")
+                                        else -> UgError.Msg("dtype mismatch for Cast $arg to ${instr.dtype}").raise()
                                     }
                                 }
 
                                 else -> {
-                                    throw UgError.Msg("dtype mismatch for Cast $arg")
+                                    UgError.Msg("dtype mismatch for Cast $arg").raise()
                                 }
                             }
                         }
@@ -453,7 +453,7 @@ public fun evalSsa(
                         }
 
                         else -> {
-                            throw UgError.Msg("unexpected reduce argument")
+                            UgError.Msg("unexpected reduce argument").raise()
                         }
                     }
             }

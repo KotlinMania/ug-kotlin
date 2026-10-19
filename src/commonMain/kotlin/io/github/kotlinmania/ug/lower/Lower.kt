@@ -71,7 +71,7 @@ internal fun lowerStridedSlice(
 ): Triple<VarId, VarId, Block> {
     val (offI, offB) = lowerIndexExprNode(slice.offset)
     val (strideI, strideB) = lowerIndexExprNode(slice.stride)
-    val ptrI = perArg[slice.ptr.id] ?: throw UgError.Msg("unknown arg ${slice.ptr.id}")
+    val ptrI = perArg[slice.ptr.id] ?: UgError.Msg("unknown arg ${slice.ptr.id}").raise()
 
     return if (slice.offset.asConst() == 0 && slice.stride.asConst() == 1) {
         Triple(ptrI, rangeId.toVarId(), Block.empty())
@@ -141,7 +141,7 @@ internal fun lowerExprNode(
             }
 
             is Expr.Range -> {
-                throw UgError.Msg("range is not supported yet")
+                UgError.Msg("range is not supported yet").raise()
             }
 
             is Expr.Unary -> {
@@ -168,7 +168,7 @@ public fun lowerKernel(kernel: Kernel): io.github.kotlinmania.ug.lang.ssa.Kernel
         val dtype =
             when (val t = arg.type) {
                 is UgType.Ptr -> t.dtype
-                is UgType.Value -> throw UgError.Msg("non-pointer arguments are not supported yet")
+                is UgType.Value -> UgError.Msg("non-pointer arguments are not supported yet").raise()
             }
         instrs.add(Pair(id, Instr.DefineGlobal(index, dtype)))
         perArg[arg.id] = id.toVarId()
